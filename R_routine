@@ -84,7 +84,7 @@ merge(df2, df1, all = FALSE)
 intersect(df1$id, df2$id)
 ##[1] 2 7
 
-##执行merge函数时，函数自动会找到两个数据框df1和df2共有的列，即id那一列（即相当于by= "id"），当参数all= FALSE时，会将两个数据框中该列数值相等的那些行输出来，类似于对这两个数据框的id这一列求交集（intersection)。此例中是id为2或7这两行。此外，还可以发现df1和df2的输入顺序不会影响最终结果，仅仅会影响输出结果中heights和weights这两列的顺序。
+##执行merge函数时，函数自动会找到两个数据框df1和df2共有的列，即id那一列（即相当于by= "id"），当参数all= FALSE时，会将两个数据框中该列数值相等的那些行输出来，类似于对这两个数据框的id这一列求交集（intersection)。此例中是id为2或7这两行。此外，还可以发现df1和df2的输入顺序不会影响最终结果，仅仅会影响输出结果中heights和weights这两列的顺序。incomparables参数:指定by中哪些单元不进行合并.
 
 
 merge(df1, df2, by = "id", all = TRUE)
