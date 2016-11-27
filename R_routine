@@ -1,0 +1,9 @@
+haha <- "ATTAGCGTACGTAGCTCATGC"
+lala <- unlist(strsplit(haha,""))
+
+
+
+a <- c(789000,267980,256780,89,123,890)
+
+sprintf("%06d.%s", a, ifelse(nchar(a) == 6, "sz", "sh"))
+[1] "789000.sz" "267980.sz" "256780.sz" "000089.sh" "000123.sh" "000890.sh"
