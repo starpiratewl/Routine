@@ -1,4 +1,6 @@
+#######################
 ## order ,rank , sort
+#######################
 haha <- c(1,9,7,2,4,6,5,3,8)
 sort(haha)
 ##[1] 1 2 3 4 5 6 7 8 9
@@ -17,8 +19,9 @@ order(haha)[sort(haha)>5&sort(haha)<9]
 
 
 
-
+##############################################
 ## get the reverse seq of a vector
+##############################################
 DNA <- "ATTAGCGTACGTAGCTCATGC"
 DNA1 <- unlist(strsplit(DNA1,""))
 DNA1
@@ -27,15 +30,18 @@ rev(DNA1)
 ##[1] "C" "G" "T" "A" "C" "T" "C" "G" "A" "T" "G" "C" "A" "T" "G" "C" "G" "A" "T" "T" "A"
 
 
+#######################
 ## subset
+#######################
 newdata <- subset(leadership, age >= 35 | age < 24,
 select=c(q1, q2, q3, q4))
 newdata <- subset(leadership, gender=="M" & age > 25,
 select=gender:q4)
 
 
-
+##############################################
 ## add prefix or postfix to a vector
+##############################################
 a <- c(789000,267980,256780,89,123,890)
 
 sprintf("%06d.%s", a, ifelse(nchar(a) == 6, "sz", "sh"))
@@ -46,7 +52,9 @@ sprintf("%06d.%s", a, ifelse(nchar(a) == 6, "sz", "sh"))
 
 
 
-
+##############################################
+## merge
+##############################################
 id1 <- c(2, 3, 4, 5, 7)
 heights <- c(62, 65, 71, 71, 67)
 df1 <- data.frame(id = id1, heights)
