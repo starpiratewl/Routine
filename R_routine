@@ -9,6 +9,8 @@ haha[order(haha)]
 ##[1] 1 2 3 4 5 6 7 8 9
 haha[order(-haha)]
 ##[1] 9 8 7 6 5 4 3 2 1
+order(haha)[sort(haha)>5&sort(haha)<9]
+##[1] 6 3 9
 
 
 
@@ -18,10 +20,12 @@ haha[order(-haha)]
 
 
 
-
-haha <- "ATTAGCGTACGTAGCTCATGC"
-lala <- unlist(strsplit(haha,""))
-
+DNA <- "ATTAGCGTACGTAGCTCATGC"
+DNA1 <- unlist(strsplit(DNA1,""))
+DNA1
+##[1] "A" "T" "T" "A" "G" "C" "G" "T" "A" "C" "G" "T" "A" "G" "C" "T" "C" "A" "T" "G" "C"
+rev(DNA1)
+##[1] "C" "G" "T" "A" "C" "T" "C" "G" "A" "T" "G" "C" "A" "T" "G" "C" "G" "A" "T" "T" "A"
 
 
 
@@ -34,3 +38,119 @@ a <- c(789000,267980,256780,89,123,890)
 
 sprintf("%06d.%s", a, ifelse(nchar(a) == 6, "sz", "sh"))
 [1] "789000.sz" "267980.sz" "256780.sz" "000089.sh" "000123.sh" "000890.sh"
+
+
+
+
+
+
+
+id1 <- c(2, 3, 4, 5, 7)
+heights <- c(62, 65, 71, 71, 67)
+df1 <- data.frame(id = id1, heights)
+
+id2 <- c(1, 2, 6:10)
+weights <- c(147, 113, 168, 135, 142, 159, 160)
+df2 <- data.frame(id = id2, weights)
+
+df1
+##  id heights
+##1  2      62
+##2  3      65
+##3  4      71
+##4  5      71
+##5  7      67
+
+df2
+##  id weights
+##1  1     147
+##2  2     113
+##3  6     168
+##4  7     135
+##5  8     142
+##6  9     159
+##7 10     160
+
+
+merge(df1, df2, all = FALSE)
+##  id heights weights
+##1  2      62     113
+##2  7      67     135
+merge(df2, df1, all = FALSE)
+##  id weights heights
+##1  2     113      62
+##2  7     135      67
+
+intersect(df1$id, df2$id)
+##[1] 2 7
+
+##执行merge函数时，函数自动会找到两个数据框df1和df2共有的列，即id那一列（即相当于by= "id"），当参数all= FALSE时，会将两个数据框中该列数值相等的那些行输出来，类似于对这两个数据框的id这一列求交集（intersection)。此例中是id为2或7这两行。此外，还可以发现df1和df2的输入顺序不会影响最终结果，仅仅会影响输出结果中heights和weights这两列的顺序。
+
+
+merge(df1, df2, by = "id", all = TRUE)
+##   id heights weights
+##1   1      NA     147
+##2   2      62     113
+##3   3      65      NA
+##4   4      71      NA
+##5   5      71      NA
+##6   6      NA     168
+##7   7      67     135
+##8   8      NA     142
+##9   9      NA     159
+##10 10      NA     160
+
+
+sort(union(df1$id, df2$id))
+##[1]  1  2  3  4  5  6  7  8  9 10
+
+merge(df1, df2, by = "id", all.x = TRUE)
+##  id heights weights
+##1  2      62     113
+##2  3      65      NA
+##3  4      71      NA
+##4  5      71      NA
+##5  7      67     135
+
+merge(df1, df2, by = "id", all.y = TRUE)
+##  id heights weights
+##1  1      NA     147
+##2  2      62     113
+##3  6      NA     168
+##4  7      67     135
+##5  8      NA     142
+##6  9      NA     159
+##7 10      NA     160
+
+
+df1$sex <- c("f", "m", "f", "f", "m")
+df2$sex <- c("f", "f", "m", "m", "f", "f", "f")
+
+merge(df1, df2)
+##  id sex heights weights
+##1  2   f      62     113
+##2  7   m      67     135
+
+merge(df1, df2, by = c("id", "sex"))
+##   id sex heights weights
+## 1  2   f      62     113
+## 2  7   m      67     135
+
+
+merge(df1, df2, by = "id")
+##   id heights sex.x weights sex.y
+## 1  2      62     f     113     f
+## 2  7      67     m     135     m
+
+
+
+
+
+
+
+
+
+
+
+
+
