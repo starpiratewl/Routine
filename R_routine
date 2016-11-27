@@ -1,5 +1,32 @@
+haha <- c(1,9,7,2,4,6,5,3,8)
+sort(haha)
+##[1] 1 2 3 4 5 6 7 8 9
+order(haha)
+##[1] 1 4 8 5 7 6 3 9 2
+rank(haha)
+##[1] 1 9 7 2 4 6 5 3 8
+haha[order(haha)]
+##[1] 1 2 3 4 5 6 7 8 9
+haha[order(-haha)]
+##[1] 9 8 7 6 5 4 3 2 1
+
+
+
+
+
+
+
+
+
+
 haha <- "ATTAGCGTACGTAGCTCATGC"
 lala <- unlist(strsplit(haha,""))
+
+
+
+
+
+
 
 
 
