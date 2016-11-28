@@ -189,6 +189,100 @@ cast(md, cyl+gear ~ variable, fun.aggregate = mean)
 
 
 
+##########################
+## barplot
+##########################
+library(vcd)
+ounts <- table(Arthritis$Improved)
+counts
+##  None   Some Marked 
+##    42     14     28 
+
+## simple bar plot
+barplot(counts,main="Simple Bar Plot",xlab="Improvement", ylab="Frequency")
+
+## horizontal bar plot
+barplot(counts,main="Horizontal Bar Plot",xlab="Frequency", ylab="Improvement",horiz=TRUE)
+
+
+## the same plot as mentioned above. but here we use Arthritis$Improved straightly without table() functionm because
+## Arthritis$Improved is a factor variable
+plot(Arthritis$Improved, main="Simple Bar Plot",xlab="Improved", ylab="Frequency")
+plot(Arthritis$Improved, horiz=TRUE, main="Horizontal Bar Plot",xlab="Frequency", ylab="Improved")
+
+
+#####################################
+## Stacked and grouped bar plots
+#####################################
+
+library(vcd)
+counts <- table(Arthritis$Improved, Arthritis$Treatment)
+counts
+        
+##         Placebo Treated
+##  None        29      13
+##  Some         7       7
+##  Marked       7      21
+
+## stacked
+barplot(counts,main="Stacked Bar Plot",xlab="Treatment", ylab="Frequency",col=c("red", "yellow","green"),legend=rownames(counts))
+
+## grouped
+barplot(counts,main="Grouped Bar Plot",xlab="Treatment", ylab="Frequency",col=c("red", "yellow", "green"),legend=rownames(counts), beside=TRUE)
+
+
+
+#####################################
+## Mean bar plots
+#####################################
+
+states <- data.frame(state.region, state.x77)
+
+means <- aggregate(states$Illiteracy, by=list(state.region), FUN=mean)
+
+means
+##        Group.1    x
+##1     Northeast 1.00
+##2         South 1.74
+##3 North Central 0.70
+##4          West 1.02
+
+means <- means[order(means$x),]
+
+means
+##        Group.1    x
+##3 North Central 0.70
+##1     Northeast 1.00
+##4          West 1.02
+##2         South 1.74
+
+barplot(means$x, names.arg=means$Group.1)
+title("Mean Illiteracy Rate") 
+
+
+
+
+#####################################
+## Tweaking bar plots
+#####################################
+
+par(mar=c(5,8,4,2))
+par(las=2)
+counts <- table(Arthritis$Improved)
+
+barplot(counts,main="Treatment Outcome",horiz=TRUE, cex.names=0.8,names.arg=c("No Improvement", "Some Improvement","Marked Improvement"))
+
+
+
+
+#####################################
+## Spinograms
+#####################################
+library(vcd)
+attach(Arthritis)
+counts <- table(Treatment, Improved)
+spine(counts, main="Spinogram Example")
+detach(Arthritis)
 
 
 
@@ -196,12 +290,68 @@ cast(md, cyl+gear ~ variable, fun.aggregate = mean)
 
 
 
+#####################################
+##  pie chart
+#####################################
+par(mfrow=c(2, 2))
+slices <- c(10, 12,4, 16, 8)
+lbls <- c("US", "UK", "Australia", "Germany", "France")
+pie(slices, labels = lbls,main="Simple Pie Chart")
+
+pct <- round(slices/sum(slices)*100)
+lbls2 <- paste(lbls, " ", pct, "%", sep="")
+pie(slices, labels=lbls2, col=rainbow(length(lbls2)),main="Pie Chart with Percentages")
+
+library(plotrix)
+pie3D(slices, labels=lbls,explode=0.1,main="3D Pie Chart ")
+
+mytable <- table(state.region)
+lbls3 <- paste(names(mytable), "\n", mytable, sep="")
+pie(mytable, labels = lbls3,main="Pie Chart from a Table\n (with sample sizes)")
+
+
+#####################################
+##  fan plot(improved pie chart)
+#####################################
+library(plotrix)
+slices <- c(10, 12,4, 16, 8)
+lbls <- c("US", "UK", "Australia", "Germany", "France")
+fan.plot(slices, labels = lbls, main="Fan Plot")
 
 
 
 
 
+#####################################
+##  Histograms
+#####################################
+par(mfrow=c(2,2))
 
+hist(mtcars$mpg)
+
+hist(mtcars$mpg,breaks=12, col="red",xlab="Miles Per Gallon",main="Colored histogram with 12 bins")
+
+hist(mtcars$mpg,freq=FALSE, breaks=12,col="red",xlab="Miles Per Gallon",main="Histogram, rug plot, density curve")
+rug(jitter(mtcars$mpg))
+lines(density(mtcars$mpg), col="blue", lwd=2)
+
+x <- mtcars$mpg
+h<-hist(x,breaks=12,col="red",xlab="Miles Per Gallon",main="Histogram with normal curve and box")
+
+xfit<-seq(min(x), max(x), length=40)
+yfit<-dnorm(xfit, mean=mean(x), sd=sd(x))
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+lines(xfit, yfit, col="blue", lwd=2)
+
+box()
+
+
+
+
+
+#####################################
+##  Kernel density plots
+#####################################
 
 
 
