@@ -1,5 +1,11 @@
 ## R in action
 
+
+
+################################
+##Descriptive statistics
+################################
+
 vars <- c("mpg", "hp", "wt")
 head(mtcars[vars])
 ##                   mpg  hp    wt
@@ -168,7 +174,9 @@ cast(dfm, am + cyl + variable ~ ., dstats)
 
 
 
-
+################################
+##Generating frequency tables
+################################
 
 library(vcd)
 head(Arthritis)
@@ -207,7 +215,7 @@ margin.table(mytable, 1)
 ##Treatment
 ##Placebo Treated 
 ##     43      41
-> margin.table(mytable, 2)
+margin.table(mytable, 2)
 ##Improved
 ##  None   Some Marked 
 ##    42     14     28 
@@ -217,7 +225,7 @@ prop.table(mytable, 1)
 ##Treatment      None      Some    Marked
 ##  Placebo 0.6744186 0.1627907 0.1627907
 ##  Treated 0.3170732 0.1707317 0.5121951
-> prop.table(mytable, 2)
+prop.table(mytable, 2)
 ##         Improved
 ##Treatment      None      Some    Marked
 ##  Placebo 0.6904762 0.5000000 0.2500000
@@ -280,9 +288,9 @@ CrossTable(Arthritis$Treatment, Arthritis$Improved)
 ##--------------------|-----------|-----------|-----------|-----------|
 ##            Placebo |        29 |         7 |         7 |        43 | 
 ##                    |     2.616 |     0.004 |     3.752 |           | 
-##                    |     0.674 |     0.163 |     0.163 |     0.512 | 
-##                    |     0.690 |     0.500 |     0.250 |           | 
-##                    |     0.345 |     0.083 |     0.083 |           | 
+##                    |     0.674 |     0.163 |     0.163 |     0.512 | ##addmargins(prop.table(mytable, 1), 2)/prop.table(mytable, 1)
+##                    |     0.690 |     0.500 |     0.250 |           | ##addmargins(prop.table(mytable, 2), 1)/prop.table(mytable, 2)
+##                    |     0.345 |     0.083 |     0.083 |           | ##prop.table(mytable)
 ##--------------------|-----------|-----------|-----------|-----------|
 ##            Treated |        13 |         7 |        21 |        41 | 
 ##                    |     2.744 |     0.004 |     3.935 |           | 
@@ -296,35 +304,134 @@ CrossTable(Arthritis$Treatment, Arthritis$Improved)
 
 
 
+mytable <- xtabs(~ Treatment+Sex+Improved, data=Arthritis)
+mytable
+##, , Improved = None
+##
+##         Sex
+##Treatment Female Male
+##  Placebo     19   10
+##  Treated      6    7
+##
+##, , Improved = Some
+##
+##        Sex
+##Treatment Female Male
+##  Placebo      7    0
+##  Treated      5    2
+##
+##, , Improved = Marked
+##
+##         Sex
+##Treatment Female Male
+##  Placebo      6    1
+##  Treated     16    5
+
+ftable(mytable)
+##                 Improved None Some Marked
+##Treatment Sex                             
+##Placebo   Female            19    7      6
+##          Male              10    0      1
+##Treated   Female             6    5     16
+##          Male               7    2      5
+
+margin.table(mytable, 1)
+##Treatment
+##Placebo Treated 
+##     43      41
+margin.table(mytable, 2)
+##Sex
+##Female   Male 
+##    59     25
+margin.table(mytable, 3)
+##Improved
+##  None   Some Marked 
+##    42     14     28 
+
+margin.table(mytable, c(1, 3))
+##         Improved
+##Treatment None Some Marked
+##  Placebo   29    7      7
+##  Treated   13    7     21
+
+
+
+ftable(prop.table(mytable, c(1, 2)))
+##                 Improved       None       Some     Marked
+##Treatment Sex                                             
+##Placebo   Female          0.59375000 0.21875000 0.18750000
+##          Male            0.90909091 0.00000000 0.09090909
+##Treated   Female          0.22222222 0.18518519 0.59259259
+##          Male            0.50000000 0.14285714 0.35714286
+
+
+ftable(addmargins(prop.table(mytable, c(1, 2)), 3))
+##                 Improved       None       Some     Marked        Sum
+##Treatment Sex                                                        
+##Placebo   Female          0.59375000 0.21875000 0.18750000 1.00000000
+##          Male            0.90909091 0.00000000 0.09090909 1.00000000
+##Treated   Female          0.22222222 0.18518519 0.59259259 1.00000000
+##          Male            0.50000000 0.14285714 0.35714286 1.00000000
+
+ftable(addmargins(prop.table(mytable, c(1, 2)), 3)) * 100
+##                 Improved       None       Some     Marked        Sum
+##Treatment Sex                                                        
+##Placebo   Female           59.375000  21.875000  18.750000 100.000000
+##          Male             90.909091   0.000000   9.090909 100.000000
+##Treated   Female           22.222222  18.518519  59.259259 100.000000
+##          Male             50.000000  14.285714  35.714286 100.000000
 
 
 
 
+################################
+##Tests of independence
+################################
 
 
+##1. chi-square test
+library(vcd)
+mytable <- xtabs(~Treatment + Improved, data = Arthritis)
+chisq.test(mytable)
+##
+##        Pearson's Chi-squared test
+##
+##data:  mytable
+##X-squared = 13.055, df = 2, p-value = 0.001463
+## This result mean treatment and Improved variables are not independent
+
+mytable <- xtabs(~Improved + Sex, data = Arthritis)
+chisq.test(mytable)
+##
+##        Pearson's Chi-squared test
+##
+##data:  mytable
+##X-squared = 4.8407, df = 2, p-value = 0.08889
+##
+##Warning message:
+##In chisq.test(mytable) : Chi-squared近似算法有可能不准
+## This result mean Improved and sex variables are independent
 
 
+## 2. Fisher's exact test
+mytable <- xtabs(~Treatment + Improved, data = Arthritis)
+fisher.test(mytable)
+##
+##        Fisher's Exact Test for Count Data
+##
+##data:  mytable
+##p-value = 0.001393
+##alternative hypothesis: two.sided
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 3.COCHRAN–MANTEL–HAENSZEL TEST
+mytable <- xtabs(~Treatment+Improved+Sex, data = Arthritis)
+mantelhaen.test(mytable)
+##
+##        Cochran-Mantel-Haenszel test
+##
+##data:  mytable
+##Cochran-Mantel-Haenszel M^2 = 14.632, df = 2, p-value = 0.0006647
 
 
 
