@@ -601,9 +601,14 @@ corr.test(states, use="complete")
 
 
 
-##################################
+########################################################################################
 ## t-test
-##################################
+########################################################################################
+
+#####################################
+## independent t-test
+#####################################
+
 library(MASS)
 t.test(Prob ~ So, data=UScrime)
 ##
@@ -621,6 +626,10 @@ t.test(Prob ~ So, data=UScrime)
 
 
 
+
+#####################################
+## dependent t-test,  still use t.test() function but add a parameter "paired = TRUE"
+#####################################
 
 library(MASS)
 sapply(UScrime[c("U1","U2")], function(x)(c(mean=mean(x),sd=sd(x))))
@@ -645,9 +654,69 @@ with(UScrime, t.test(U1, U2, paired=TRUE))
 
 
 
-############################################
+########################################################################################
 ## Nonparametric tests of group differences
-############################################
+########################################################################################
+
+##############################
+## two groups are independent
+##############################
+library(MASS)
+with(UScrime, by(Prob, So, median))
+##So: 0
+##[1] 0.038201
+##------------------------------------------------------------------------------------------------------ 
+##So: 1
+##[1] 0.055552
+
+wilcox.test(Prob ~ So, data=UScrime)
+##
+##        Wilcoxon rank sum test
+##
+##data:  Prob by So
+##W = 81, p-value = 8.488e-05
+##alternative hypothesis: true location shift is not equal to 0
+
+
+
+
+
+##############################
+## the dependent sample t-test, we still use wolcox.test(), but add a parameter "paired = TRUE"
+##############################
+sapply(UScrime[c("U1","U2")], median)
+##U1 U2 
+##92 34 
+
+with(UScrime, wilcox.test(U1, U2, paired=TRUE))
+##
+##        Wilcoxon signed rank test with continuity correction
+##
+##data:  U1 and U2
+##V = 1128, p-value = 2.464e-09
+##alternative hypothesis: true location shift is not equal to 0
+##
+##Warning message:
+##In wilcox.test.default(U1, U2, paired = TRUE) :
+##  cannot compute exact p-value with ties
+
+
+
+
+
+##############################
+## compare more than two groups
+## if groups are independent, we use kruskal.test(y ~ A, data), A variable contain several levels, if there are only two groups, this method is equal to Mann-Whitney U test(wilcox.test(y ~ x, data) or wilcox.test(y1, y2))
+## if groups are dependent, we use friedman.test(y ~ A | B, data)
+##############################
+states <- as.data.frame(cbind(state.region, state.x77))
+
+kruskal.test(Illiteracy ~ state.region, data=states)
+##
+##        Kruskal-Wallis rank sum test
+##
+##data:  Illiteracy by state.region
+##Kruskal-Wallis chi-squared = 22.672, df = 3, p-value = 4.726e-05
 
 
 
@@ -655,14 +724,17 @@ with(UScrime, t.test(U1, U2, paired=TRUE))
 
 
 
-
-
-
-
-
-
-
-
+##############################
+## compare more than two groups and pinpoint which level in one variable is significantly different from others
+## but the package(npmc) is not available in R-3.2.5
+##############################
+class <- state.region
+var <- state.x77[,c("Illiteracy")]
+mydata <- as.data.frame(cbind(class, var))
+rm(class, var)
+library(npmc)
+summary(npmc(mydata), type="BF")
+aggregate(mydata, by=list(mydata$class), median)
 
 
 
