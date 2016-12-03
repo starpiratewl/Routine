@@ -174,24 +174,52 @@ plot(effect("hp:wt", fit,xlevels = list(wt=c(2.2,3.2,4.2))),multiline=TRUE)
 ##  Regression diagnostics
 ################################################################################################
 
+fit <- lm(weight ~ height, data=women)
+par(mfrow=c(2,2))
+plot(fit)
+
+
+fit2 <- lm(weight ~ height + I(height^2), data=women)
+par(mfrow=c(2,2))
+plot(fit2)
+
+
+newfit <- lm(weight~ height + I(height^2), data=women[-c(13,15),])
+par(mfrow=c(2,2))
+plot(newfit)
 
 
 
 
+states <- as.data.frame(state.x77[,c("Murder", "Population","Illiteracy", "Income", "Frost")])
+fit <- lm(Murder ~ Population + Illiteracy + Income + Frost, data=states)
+par(mfrow=c(2,2))
+plot(fit)
 
 
 
+###########################
+##  car package
+###########################
 
+library(car)
+fit <- lm(Murder ~ Population + Illiteracy + Income + Frost, data=states)
+qqPlot(fit, labels=row.names(states), id.method="identify",simulate=TRUE, main="Q-Q Plot")
 
+## in the plot  Nevada can be easily identified as an outlier
 
-
-
-
-
-
-
-
-
+states["Nevada",]
+##       Murder Population Illiteracy Income Frost
+##Nevada   11.5        590        0.5   5149   188
+fitted(fit)["Nevada"]
+##  Nevada 
+##3.878958 
+residuals(fit)["Nevada"]
+##  Nevada 
+##7.621042 
+rstudent(fit)["Nevada"]
+##  Nevada 
+##3.542929 
 
 
 
