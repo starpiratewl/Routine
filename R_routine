@@ -185,7 +185,25 @@ sqldf("select avg(mpg) as avg_mpg, avg(disp) as avg_disp, gear from mtcars where
 
 
 
+##############################
+## file manipulation in R
+##############################
+path <- "/XX/";              #设定需修改文件集合所在的主目录（修改这里）
+setwd(path)                  # 设置为当前目录
 
+old.file.names <- dir()      # 返回当前目录下所有文件名集合，类型为向量
+
+## 设置新的命名规则
+new.file.names <- sapply(old.file.names,function(file){
+
+  # 新的命名规则，下例为所有文件统一加后缀，本部分可根据具体情况修改（修改这里）
+  file <- paste0(file,".mkv")
+
+  return (file)
+})
+
+# 执行批量命名操作
+file.rename(old.file.names,new.file.names)
 
 
 
