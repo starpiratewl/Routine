@@ -1,6 +1,6 @@
-#######################
+##############################################
 ## order ,rank , sort
-#######################
+##############################################
 haha <- c(1,9,7,2,4,6,5,3,8)
 sort(haha)
 ##[1] 1 2 3 4 5 6 7 8 9
@@ -30,9 +30,42 @@ rev(DNA1)
 ##[1] "C" "G" "T" "A" "C" "T" "C" "G" "A" "T" "G" "C" "A" "T" "G" "C" "G" "A" "T" "T" "A"
 
 
-#######################
+##############################################
+## basic operation with vectors
+##############################################
+
+## truncate the vector
+m <- c(1,2,3,NA,NA,4,5)
+m[-which(is.na(m))]
+m[-c(4,5)]
+
+## subtract b from a
+a<-10:100
+b<-sample(a,40,replace=FALSE)
+
+a[-match(b,a)]
+
+setdiff(a, b)
+
+a[!a%in%b]
+
+
+## appoint names to vectors
+years <- c(1960,1964,1976,1994)
+names(years) <- c("Kennedy","Johnson","Carter","Clinton")
+years
+##Kennedy Johnson  Carter Clinton 
+##   1960    1964    1976    1994 
+
+
+
+
+
+
+
+##############################################
 ## subset
-#######################
+##############################################
 newdata <- subset(leadership, age >= 35 | age < 24,
 select=c(q1, q2, q3, q4))
 newdata <- subset(leadership, gender=="M" & age > 25,
@@ -153,9 +186,9 @@ merge(df1, df2, by = "id")
 ## 2  7      67     m     135     m
 
 
-##############################
+##############################################
 ##  R sql
-##############################
+##############################################
 library(sqldf)
 newdf <- sqldf("select * from mtcars where carb=1 order by mpg",row.names=TRUE)
 newdf
@@ -185,9 +218,9 @@ sqldf("select avg(mpg) as avg_mpg, avg(disp) as avg_disp, gear from mtcars where
 
 
 
-##############################
+##############################################
 ## file manipulation in R
-##############################
+##############################################
 path <- "/XX/";              #设定需修改文件集合所在的主目录（修改这里）
 setwd(path)                  # 设置为当前目录
 
@@ -208,9 +241,9 @@ file.rename(old.file.names,new.file.names)
 
 
 
-##############################
+##############################################
 ## How to sort a dataframe by column(s)?
-##############################
+##############################################
 
 > mtcars[order(mtcars$disp),]
                      mpg cyl  disp  hp drat    wt  qsec vs am gear carb
