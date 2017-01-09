@@ -129,8 +129,19 @@ detach(mtcars)
 ##################################################################
 ## combine different type of graph in one picture
 ##################################################################
+oapr <- par(no.readonly = T)
+par(fig = c(0,0.8,0,0.8))
+plot(mtcars$wt, mtcars$mpg, xlab = "Miles per Gallon", ylab = "Car Weight")
 
+par(fig = c(0,0.8,0.55,1), new = T)
+boxplot(mtcars$wt, horizontal = T, axes = F)
 
+par(fig = c(0.65, 1, 0, 0.8), new = T)
+boxplot(mtcars$mpg, axes = F)
+
+mtext("Enhanced Scatter plot", side = 3, outer = T, line = -4)
+
+par(opar)
 
 
 
