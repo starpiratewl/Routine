@@ -242,17 +242,182 @@ newdata <- na.omit(leadership)
 
 ##############################
 ## date values
+strDates <- c("2007-22-06","2014-01-01")
+as.Date(strDates, "%m/%d/%Y")
+##[1] NA NA
+as.Date(strDates, "%Y/%d/%m")
+##[1] NA NA
+as.Date(strDates,"%Y-%d-%m")
+##[1] "2007-06-22" "2014-01-01"
+
+###############
+##  %d  01-31
+##  %a  Mon
+##  %A  Monday
+##  %m  00-12
+##  %b  Jan
+##  %B  January
+##  %Y  2007
+##  %y  07
+###############
+
+
+myformat <- "%m/%d/%y"
+leadership$date <- as.Date(leadership$date, myformat)
+##  manager testdate country gender age item1 item2 item3 item4 item5       date
+##1       1 10/24/08      US      M  32     5     4     5     5     5 2008-10-24
+##2       2 10/28/08      US      F  45     3     5     2     5     5 2008-10-28
+##3       3  10/1/08      UK      F  25     3     5     5     5     2 2008-10-01
+##4       4 10/12/08      UK      M  39     3     3     4    NA    NA 2008-10-12
+##5       5   5/1/09      UK      F  99     2     2     1     2     1 2009-05-01
+
+
+date()
+##[1] "Tue Jan 10 09:14:46 2017"
+Sys.Date()
+##[1] "2017-01-10"
+
+myformat <- "%Y//%m//%d//%A//%B"
+format(date(),myformat)
+##Error in format.default(date(), myformat) : invalid 'trim' argument
+format(Sys.Date(), myformat)
+##[1] "2017//01//10//Tuesday//January"
+
+
+## date can do subtractions
+startdate <- as.Date("2004-02-13")
+enddate <- as.Date("2011-01-22")
+enddate - startdate
+##Time difference of 2535 days
+difftime(startdate,enddate)
+##Time difference of -2535 days
+difftime(startdate,enddate,units = "weeks")
+##Time difference of -362.1429 weeks
+difftime(startdate,enddate,units = "years")
+##Error in match.arg(units) : 
+##  'arg' should be one of “auto”, “secs”, “mins”, “hours”, “days”, “weeks”
+
+
+##############################
+## sorting data
+
+leadership
+##  manager testdate country gender age item1 item2 item3 item4 item5       date
+##1       1 10/24/08      US      M  32     5     4     5     5     5 2008-10-24
+##2       2 10/28/08      US      F  45     3     5     2     5     5 2008-10-28
+##3       3  10/1/08      UK      F  25     3     5     5     5     2 2008-10-01
+##4       4 10/12/08      UK      M  39     3     3     4    NA    NA 2008-10-12
+##5       5   5/1/09      UK      F  99     2     2     1     2     1 2009-05-01
+
+leadership[order(leadership$age),]
+##  manager testdate country gender age item1 item2 item3 item4 item5       date
+##3       3  10/1/08      UK      F  25     3     5     5     5     2 2008-10-01
+##1       1 10/24/08      US      M  32     5     4     5     5     5 2008-10-24
+##4       4 10/12/08      UK      M  39     3     3     4    NA    NA 2008-10-12
+##2       2 10/28/08      US      F  45     3     5     2     5     5 2008-10-28
+##5       5   5/1/09      UK      F  99     2     2     1     2     1 2009-05-01
+
+
+
+##############################
+## merge data
+
+id1 <- c(2, 3, 4, 5, 7)
+heights <- c(62, 65, 71, 71, 67)
+df1 <- data.frame(id1 = id1, heights)
+
+id2 <- c(1, 2, 6:10)
+weights <- c(147, 113, 168, 135, 142, 159, 160)
+df2 <- data.frame(id2 = id2, weights)
+
+df1$sex <- c("f", "m", "f", "f", "m")
+df2$sex <- c("f", "f", "m", "m", "f", "f", "f")
+
+
+merge(df1,df2, by.x = "id1", by.y ="id2", all = F)
+##  id1 heights sex.x weights sex.y
+##1   2      62     f     113     f
+##2   7      67     m     135     m
+
+merge(df1,df2, by.x = "id1", by.y = "id2", all = T)
+##   id1 heights sex.x weights sex.y
+##1    1      NA  <NA>     147     f
+##2    2      62     f     113     f
+##3    3      65     m      NA  <NA>
+##4    4      71     f      NA  <NA>
+##5    5      71     f      NA  <NA>
+##6    6      NA  <NA>     168     m
+##7    7      67     m     135     m
+##8    8      NA  <NA>     142     f
+##9    9      NA  <NA>     159     f
+##10  10      NA  <NA>     160     f
+
+merge(df1,df2, by.x = "id1", by.y = "id2", all.x = T)
+##  id1 heights sex.x weights sex.y
+##1   2      62     f     113     f
+##2   3      65     m      NA  <NA>
+##3   4      71     f      NA  <NA>
+##4   5      71     f      NA  <NA>
+##5   7      67     m     135     m
+merge(df1,df2, by.x = "id1", by.y = "id2", all.y = T)
+##  id1 heights sex.x weights sex.y
+##1   1      NA  <NA>     147     f
+##2   2      62     f     113     f
+##3   6      NA  <NA>     168     m
+##4   7      67     m     135     m
+##5   8      NA  <NA>     142     f
+##6   9      NA  <NA>     159     f
+##7  10      NA  <NA>     160     f
 
 
 
 
+##############################
+## subseting data
+
+## selecting and keeping variables
+newdata <- leadership[,c(6:10)]
+
+myvars <- c("q1","q2","q3","q4","q5")
+newdata1 <- leadership[myvars]
+
+## excluding and droping variables
+myvars <- names(leadership) %in% c("q3","q4")
+newdata2 <- leadership[!myvars]
+
+newdata3 <- leadership[c(-8,-9)]
+
+newdata4 <- leadership
+newdata4$q3 <- newdata4$q4 <- NULL
 
 
+## selecting observations
+
+newdata5 <- leadership[1:3,]
+newdata6 <- leadership[which(leadership$gender == "M" & leadership$age > 30),]
+newdata7 <- leadership[leadership$gender == "M" & leadership$age > 30, ]
+
+leadership$testdate <- as.Date(leadership$date, "%m/%d/%y")
+startdate <- as.Date("2009-01-01")
+enddate <- as.Date("2009-10-31")
+newdata8 <- leadership[which(leadership$testdate >= startdate & leadership$testdate <= enddate),]
 
 
+## subset function
+newdata9 <- subset(leadership, age > 35 | age < 24, select = c(q1,q2,q3,q4))
+
+newdata10 <- subset(leadership, gender == "M" & age > 25, select = gender:q4)
 
 
+## random samples
 
+mysample <- leadership[sample(1:nrow(leadership), 3, replace = F),]
+
+## use SQL
+library(sqldf)
+newdf <- sqldf("select * from mtcars where carb = 1 order by mpg", row.names = T)
+
+sqldf("select avg(mpg) as avg_mpg, avg(disp) as avg_disp, gear from mtcars where cyl in (4,6) group by gear")
 
 
 
