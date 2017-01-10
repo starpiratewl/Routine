@@ -220,6 +220,59 @@ fix(leadership)
 library(reshape)
 leadership <- rename(leadership, c(manager = "managerID", date = "testDate"))
 
+names(leadership)
+names(leadership)[2] <- "testdate"
+names(leadership)[6:10] <- c("item1","item2","item3","item4","item5")
+
+
+##############################
+## deal with missing value
+
+## find na value
+is.na(leadership[,6:10])
+
+## exclude missing values from analyses
+##1, use function has a na.rm = T parameters
+x <- c(1,2,NA,4)
+y <- sum(x, na.rm = T)
+
+##2, use na.omit() function to delete the NA values in rows(observations)
+newdata <- na.omit(leadership)
+
+
+##############################
+## date values
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
