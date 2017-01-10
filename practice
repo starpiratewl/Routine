@@ -430,16 +430,68 @@ sqldf("select avg(mpg) as avg_mpg, avg(disp) as avg_disp, gear from mtcars where
 scale(vector)
 
 ## probability functions
+##计算给定正态分布95%面积下的z分数值
+qnorm(0.95, mean = 0, sd = 1)   ##1.644
+
+##计算z分数为0.95时候，正态分布下的面积
+pnorm(0.95, mean = 0, sd = 1)   ##0.8289
+
+##计算在给定的正态分布内，取到特定值的概率
+dnorm(0.95, mean = 0,sd = 1)    ##0.254
+
+##给出一个既定范围，既定数量的正态分布
+rnorm(100, mean = 0, sd = 1)  ##一个数量为100，均值为0，sd为1的分布
+
+pnorm(9.75,mean = 10, sd = 0.125) 
+pnorm(10.25, mean = 10, sd = 0.125)
+pnorm(9.75,mean = 10, sd = 0.125) + (1 - pnorm(10.25, mean = 10, sd = 0.125))
+pnorm(10.25, mean = 9.7, sd = 0.0875) - pnorm(9.75,mean = 9.7, sd = 0.0875)
+
+##从9.9到9.1，随着离原始均值10偏差越来越大，检验功效越来越高，说明检测出有问题的概率越来越高，9.5之后，就基本是100%了
+pnorm(9.75,mean = 9.1, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.1, sd = 0.0875))
+pnorm(9.75,mean = 9.2, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.2, sd = 0.0875))
+pnorm(9.75,mean = 9.3, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.3, sd = 0.0875))
+pnorm(9.75,mean = 9.4, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.4, sd = 0.0875))
+pnorm(9.75,mean = 9.5, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.5, sd = 0.0875))
+pnorm(9.75,mean = 9.6, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.6, sd = 0.0875))
+pnorm(9.75,mean = 9.7, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.7, sd = 0.0875))
+pnorm(9.75,mean = 9.8, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.8, sd = 0.0875))
+pnorm(9.75,mean = 9.9, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.9, sd = 0.0875))
 
 
+##随着sd越来越大，检验功效越来越高，说明检测出有问题的概率越来越高，但是功效增长幅度没有均值变化来的显著
+1- pnorm(10.25, mean = 10, sd = 0.0875) + pnorm(9.75,mean = 10, sd = 0.0875)
+1-pnorm(10.25, mean = 10, sd = 0.0975) + pnorm(9.75,mean = 10, sd = 0.0975)
+1-pnorm(10.25, mean = 10, sd = 0.1075) + pnorm(9.75,mean = 10, sd = 0.1075)
+1-pnorm(10.25, mean = 10, sd = 0.1175) + pnorm(9.75,mean = 10, sd = 0.1175)
+1-pnorm(10.25, mean = 10, sd = 0.1275) + pnorm(9.75,mean = 10, sd = 0.1275)
+1-pnorm(10.25, mean = 10, sd = 0.1375) + pnorm(9.75,mean = 10, sd = 0.1375)
+1-pnorm(10.25, mean = 10, sd = 0.1475) + pnorm(9.75,mean = 10, sd = 0.1475)
+1-pnorm(10.25, mean = 10, sd = 0.1575) + pnorm(9.75,mean = 10, sd = 0.1575)
+1-pnorm(10.25, mean = 10, sd = 0.1675) + pnorm(9.75,mean = 10, sd = 0.1675)
+1-pnorm(10.25, mean = 10, sd = 0.1775) + pnorm(9.75,mean = 10, sd = 0.1775)
+1-pnorm(10.25, mean = 10, sd = 0.1875) + pnorm(9.75,mean = 10, sd = 0.1875)
+1-pnorm(10.25, mean = 10, sd = 0.1975) + pnorm(9.75,mean = 10, sd = 0.1975)
 
 
+### density plot
+library(MASS)
+data=read.csv("2dplot.csv")
+x=data$labor.gdp
+y=data$capital.gdp
+
+xy.kde <- kde2d(x,y, n = 100)
+
+rgb.palette=colorRampPalette(c("white","red"))
+filled.contour(xy.kde,xlim = c(0, 0.07), ylim = c(0, 15),col = rgb.palette(27),plot.title = title(main = "",xlab = "Growth rate of labor/gdp", ylab = "Growth rate of capital/gdp"))
+contour(xy.kde, xlim = c(0, 0.07), ylim = c(0, 15),lwd=1,add = T)
+points(x,y, pch = 16, cex = 0.5)
 
 
-
-
-
-
+pretty(c(-3,3),30)
+y <- dnorm(x)
+plot(x,y,type = "l", xlab = "Normal Deviate", ylab = "Density", yaxs = "i")
+##yaxs,xaxa: plot默认画图时会在预留一部分坐标空间，设置为“i”后，就可以去掉预留空间
 
 
 
