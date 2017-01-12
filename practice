@@ -506,21 +506,209 @@ names(mydata) <- c("y", "x1", "x2")
 dim(mydata)
 
 
+## character function
+
+x <- c("Hello", "world", "!")
+nchar(x)
+
+> length("")
+[1] 1
+> nchar("")
+[1] 0
+
+
+DNA <- "AtGCtttACC"
+tolower(DNA)
+toupper(DNA)
+chartr("Tt","Uu",DNA)
+chartr("Tt","UU",DNA)
+
+
+> paste("CK",1:6, sep = "")
+[1] "CK1" "CK2" "CK3" "CK4" "CK5" "CK6"
+
+x <- list(a = "aaa", b = "bbb", c = "ccc")
+y <- list(d = 1, e = 2)
+paste(x, y, sep = "-")
+#[1] "aaa-1" "bbb-2" "ccc-1"
+
+z <- list(x,y)
+paste("T", z, sep = ":")
+
+> as.character(x)
+[1] "aaa" "bbb" "ccc"
+
+> as.character(z)
+[1] "list(a = \"aaa\", b = \"bbb\", c = \"ccc\")" "list(d = 1, e = 2)"
+
+> paste(x,y, sep = "-", collapse = "; ")
+[1] "aaa-1; bbb-2; ccc-1"
+
+> paste(x, collapse = "_1_")
+[1] "aaa_1_bbb_1_ccc"
 
 
 
+text <- "Hello Adam!\nHello Ava!"
+> strsplit(text, " ")
+[[1]]
+[1] "Hello"        "Adam!\nHello" "Ava!" 
+
+> strsplit(text,"\n")
+[[1]]
+[1] "Hello Adam!" "Hello Ava!" 
+
+> strsplit(text, "\\s")
+[[1]]
+[1] "Hello" "Adam!" "Hello" "Ava!" 
+
+> strsplit(text, "")
+[[1]]
+ [1] "H"  "e"  "l"  "l"  "o"  " "  "A"  "d"  "a"  "m"  "!"  "\n" "H"  "e"  "l"  "l"  "o"  " "  "A"  "v"  "a"  "!" 
 
 
 
+files <- list.files("c:/windows")
+> grep("\\.exe$", files)
+ [1]  5 18 20 23 24 36 47 52 65 78 79 86 89
+
+> grepl("\\.exe$",files)
+ [1] FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE  TRUE FALSE FALSE  TRUE  TRUE FALSE FALSE
+[27] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE  TRUE
+[53] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE
+[79]  TRUE FALSE FALSE FALSE FALSE FALSE FALSE  TRUE FALSE FALSE  TRUE FALSE FALSE
+
+> files[grep("\\.exe$", files)]
+ [1] "bfsvc.exe"     "explorer.exe"  "fveupdate.exe" "HelpPane.exe"  "hh.exe"        "notepad.exe"   "regedit.exe"   "RtCRU64.exe"   "splwow64.exe" 
+[10] "twunk_16.exe"  "twunk_32.exe"  "winhlp32.exe"  "write.exe" 
+
+> files[grepl("\\.exe$",files)]
+ [1] "bfsvc.exe"     "explorer.exe"  "fveupdate.exe" "HelpPane.exe"  "hh.exe"        "notepad.exe"   "regedit.exe"   "RtCRU64.exe"   "splwow64.exe" 
+[10] "twunk_16.exe"  "twunk_32.exe"  "winhlp32.exe"  "write.exe"
 
 
 
+> text <- c("Hellow, Adam!", "Hi, Adam!", "How are you, Adam.")
+> regexpr("Adam", text)
+[1]  9  5 14
+attr(,"match.length")
+[1] 4 4 4
+attr(,"useBytes")
+[1] TRUE
+
+> gregexpr("Adam", text)
+[[1]]
+[1] 9
+attr(,"match.length")
+[1] 4
+attr(,"useBytes")
+[1] TRUE
+
+[[2]]
+[1] 5
+attr(,"match.length")
+[1] 4
+attr(,"useBytes")
+[1] TRUE
+
+[[3]]
+[1] 14
+attr(,"match.length")
+[1] 4
+attr(,"useBytes")
+[1] TRUE
 
 
 
+> regexec("Adam", text)
+[[1]]
+[1] 9
+attr(,"match.length")
+[1] 4
+attr(,"useBytes")
+[1] TRUE
+
+[[2]]
+[1] 5
+attr(,"match.length")
+[1] 4
+attr(,"useBytes")
+[1] TRUE
+
+[[3]]
+[1] 14
+attr(,"match.length")
+[1] 4
+attr(,"useBytes")
+[1] TRUE
+
+
+text <- c("Hellow, Adam!", "Hi, Adam!\nHI,Ava!", "How are you, Adam.")
+> text
+[1] "Hellow, Adam!"      "Hi, Adam!\nHI,Ava!" "How are you, Adam."
+
+> sub(pattern = "Adam|Ava", replacement = "world", text)
+[1] "Hellow, world!"      "Hi, world!\nHI,Ava!" "How are you, world."
+> text
+[1] "Hellow, Adam!"      "Hi, Adam!\nHI,Ava!" "How are you, Adam."
+
+> gsub(pattern = "Adam|Ava", replacement = "world", text)
+[1] "Hellow, world!"        "Hi, world!\nHI,world!" "How are you, world." 
+> text
+[1] "Hellow, Adam!"      "Hi, Adam!\nHI,Ava!" "How are you, Adam."
 
 
 
+x <- "123456789"
+> substr(x, c(2,4), c(4,5,8))
+[1] "234"
+> substring(x, c(2,4),c(4,5,8))
+[1] "234"     "45"      "2345678"
+
+> x <- c("123456789", "abcdefghijklmnopqrstuvwxyz")
+> x
+[1] "123456789"                  "abcdefghijklmnopqrstuvwxyz"
+> substr(x, c(2,4), c(4,5,8))
+[1] "234" "de"
+> substring(x, c(2,4), c(4,5,8))
+[1] "234"     "de"      "2345678"
+
+
+bases <- c("A", "T", "G", "C")
+DNA <- paste(sample(bases, 12, replace = T), collapse = "")
+substring(DNA, seq(1,10, by = 3), seq(3,12, by = 3))
+[1] "CCC" "GGG" "ATG" "TGT"
+
+
+
+> strtrim(rep("abcdef", 3), c(1,3,5))
+[1] "a"     "abc"   "abcde"
+> strtrim(c("1","123", "12345"), 4)
+[1] "1"    "123"  "1234"
+
+
+str1 <- "Each character string in the input is first split into paragraphs\n(or lines containing whitespace only).  The paragraphs are then\nformatted by breaking lines at word boundaries.  The target\ncolumns for wrapping lines and the indentation of the first and\nall subsequent lines of a paragraph can be controlled\nindependently."
+str2 <- rep(str1, 2)
+strwrap(str2, width = 80, indent = 2)
+
+> strwrap(str1, width = 80, indent = 2, exdent = 2)
+[1] "  Each character string in the input is first split into paragraphs (or lines"
+[2] "  containing whitespace only).  The paragraphs are then formatted by breaking"
+[3] "  lines at word boundaries.  The target columns for wrapping lines and the"   
+[4] "  indentation of the first and all subsequent lines of a paragraph can be"    
+[5] "  controlled independently."
+
+
+> match("xx", c("abc", "xx", "xxx", "xx"))
+[1] 2
+> match(2, c(3,1,2,4))
+[1] 3
+> charmatch("xx", "xx")
+[1] 1
+> charmatch("xx", "xxa")
+[1] 1
+> charmatch("xx", "axx")
+[1] NA
 
 
 
