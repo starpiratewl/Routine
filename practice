@@ -524,6 +524,18 @@ chartr("Tt","Uu",DNA)
 chartr("Tt","UU",DNA)
 
 
+mychar <- c("ACTACCACTAACCACT","TCATCCATTCGTGGG","GTTGTTCCATAG")
+
+dna2rna <- function(inputStr){
+  if(!is.character(inputStr))
+    stop("need character input")
+  is = toupper(inputStr)
+  chartr("T", "U", is)
+}
+
+
+
+
 > paste("CK",1:6, sep = "")
 [1] "CK1" "CK2" "CK3" "CK4" "CK5" "CK6"
 
@@ -565,6 +577,30 @@ text <- "Hello Adam!\nHello Ava!"
 > strsplit(text, "")
 [[1]]
  [1] "H"  "e"  "l"  "l"  "o"  " "  "A"  "d"  "a"  "m"  "!"  "\n" "H"  "e"  "l"  "l"  "o"  " "  "A"  "v"  "a"  "!" 
+
+
+
+mychar <- c("ACTACCACTAACCACT","TCATCCATTCGTGGG","GTTGTTCCATAG")
+
+strsplit(mychar, "G")
+##[[1]]
+##[1] "ACTACCACTAACCACT"
+##
+##[[2]]
+##[1] "TCATCCATTC" "T"          ""           ""          
+##
+##[[3]]
+##[1] ""        "TT"      "TTCCATA"
+
+strsplit(mychar, "[CG]")
+##[[1]]
+##[1] "A"   "TA"  ""    "A"   "TAA" ""    "A"   "T"  
+##
+##[[2]]
+##[1] "T"   "AT"  ""    "ATT" ""    "T"   ""    ""   
+##
+##[[3]]
+##[1] ""    "TT"  "TT"  ""    "ATA"
 
 
 
@@ -709,6 +745,79 @@ strwrap(str2, width = 80, indent = 2)
 [1] 1
 > charmatch("xx", "axx")
 [1] NA
+
+
+exT<-c("Intron", "Exon", "promoter","enhancer")
+> pmatch("x", exT)
+[1] NA
+> pmatch("E", exT)
+[1] 2
+> pmatch("e", exT)
+[1] 4
+
+> charmatch("E",exT)
+[1] 2
+> charmatch("e", exT)
+[1] 4
+> charmatch("x", exT)
+[1] NA
+
+
+> format(1:10)
+## [1] " 1" " 2" " 3" " 4" " 5" " 6" " 7" " 8" " 9" "10"
+
+> format(1:10, trim = T)
+ [1] "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"  "10"
+
+
+zz <- data.frame("(row.names)" = c("aaaaaa", "bb"), check.names = F)
+ > data.frame("(row.names)" = c("aaaaaa", "b"), check.names = F)
+  (row.names)
+1      aaaaaa
+2           b
+> data.frame("(row.names)" = c("aaaaaa", "b"), check.names = T)
+  X.row.names.
+1       aaaaaa
+2            b
+ 
+> zz
+  (row.names)
+1      aaaaaa
+2           b
+> format(zz, justify = "left")
+  (row.names)
+1      aaaaaa
+2      b 
+
+
+
+> format(13.7)
+[1] "13.7"
+> format(13.7, nsmall = 3)
+[1] "13.700"
+
+> format(c(6.0, 13.1))
+[1] " 6.0" "13.1"
+> format(c(6.0, 13.1), digits = 2)
+[1] " 6" "13"
+> format(c(6.0, 13.1), digits = 2, nsmall = 1)
+[1] " 6.0" "13.1"
+
+> format(2^31 - 1)
+[1] "2147483647"
+> format(2^31 - 1, scientific = T)
+[1] "2.147484e+09"
+
+
+
+## regular expression
+
+
+
+
+
+
+
 
 
 
