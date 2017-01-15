@@ -488,6 +488,7 @@ contour(xy.kde, xlim = c(0, 0.07), ylim = c(0, 15),lwd=1,add = T)
 points(x,y, pch = 16, cex = 0.5)
 
 
+
 pretty(c(-3,3),30)
 y <- dnorm(x)
 plot(x,y,type = "l", xlab = "Normal Deviate", ylab = "Density", yaxs = "i")
@@ -505,7 +506,7 @@ mydata <- as.data.frame(mydata)
 names(mydata) <- c("y", "x1", "x2")
 dim(mydata)
 
-
+#############################
 ## character function
 
 x <- c("Hello", "world", "!")
@@ -622,61 +623,6 @@ files <- list.files("c:/windows")
  [1] "bfsvc.exe"     "explorer.exe"  "fveupdate.exe" "HelpPane.exe"  "hh.exe"        "notepad.exe"   "regedit.exe"   "RtCRU64.exe"   "splwow64.exe" 
 [10] "twunk_16.exe"  "twunk_32.exe"  "winhlp32.exe"  "write.exe"
 
-
-
-> text <- c("Hellow, Adam!", "Hi, Adam!", "How are you, Adam.")
-> regexpr("Adam", text)
-[1]  9  5 14
-attr(,"match.length")
-[1] 4 4 4
-attr(,"useBytes")
-[1] TRUE
-
-> gregexpr("Adam", text)
-[[1]]
-[1] 9
-attr(,"match.length")
-[1] 4
-attr(,"useBytes")
-[1] TRUE
-
-[[2]]
-[1] 5
-attr(,"match.length")
-[1] 4
-attr(,"useBytes")
-[1] TRUE
-
-[[3]]
-[1] 14
-attr(,"match.length")
-[1] 4
-attr(,"useBytes")
-[1] TRUE
-
-
-
-> regexec("Adam", text)
-[[1]]
-[1] 9
-attr(,"match.length")
-[1] 4
-attr(,"useBytes")
-[1] TRUE
-
-[[2]]
-[1] 5
-attr(,"match.length")
-[1] 4
-attr(,"useBytes")
-[1] TRUE
-
-[[3]]
-[1] 14
-attr(,"match.length")
-[1] 4
-attr(,"useBytes")
-[1] TRUE
 
 
 text <- c("Hellow, Adam!", "Hi, Adam!\nHI,Ava!", "How are you, Adam.")
