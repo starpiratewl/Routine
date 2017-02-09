@@ -1,0 +1,162 @@
+Complex <- function(real, imaginary){
+  structure(list(real, imaginary), class = "Complex")
+}
+
+print.Complex <- function(x){
+  print(paste(x[1], "+", x[2], "i", sep = ""))
+}
+
+c1 = Complex(10,20)
+
+
+
+##实际上点号与泛型函数有很强的联系，所以当我个人编码的时候，从来不使用点号来命名变量，例如我不会将变量命名为best.model，而是将变量命名为bestModel。我觉得这样的风格应该是最明确的，因为将其与泛型函数划清了界限。此外函数的命名，我一般也使用下划线作为连接符，例如命名为find_value，而不会使用find.value
+
+
+## S3 object
+x <- list(a = 1:10, b = 11:20)
+class(x)
+##[1] "list"
+
+class(x) <- 'pair'
+class(x)
+##[1] "pair"
+
+plot.pair <- function(obj){
+  mi <- min(c(x$a, x$b))
+  ma <- max(c(x$a, x$b))
+  plot(x$a, type = 'o', col = "blue", ylim = c(mi, ma))
+  lines(x$b, type = 'o', col = "red")
+}
+
+plot(x)
+## will show the plot with two color lines
+
+methods(plot)
+## this will show all the methods of the function plot(generic function)
+
+
+
+
+## from http://blog.fens.me/r-class-s3/
+library(pryr)
+
+x <- 1
+attr(x, 'class') <- 'foo'
+
+x
+##[1] 1
+##attr(,"class")
+##[1] "foo"
+
+class(x)
+[1] "foo"
+
+
+
+
+
+
+
+
+
+##S4 object
+
+setClass('mybox', slots = list(long = 'numeric', width = 'numeric', height = 'numeric', name = 'character'))
+
+myBox <- new('mybox')
+
+myBox
+##An object of class "mybox"
+##Slot "long":
+##numeric(0)
+##
+##Slot "width":
+##numeric(0)
+##
+##Slot "height":
+##numeric(0)
+##
+##Slot "name":
+##character(0)
+
+myBox <- new('mybox', long = 3, width = 4, height = 5, name = "box1")
+myBox
+##An object of class "mybox"
+##Slot "long":
+##[1] 3
+##
+##Slot "width":
+##[1] 4
+##
+##Slot "height":
+##[1] 5
+##
+##Slot "name":
+##[1] "box1"
+
+slot(myBox, 'long')
+##[1] 3
+
+myBox@long
+##[1] 3
+
+myBox@long <- 100
+myBox@long
+##[1] 100
+
+myBox@longg <- 100
+##Error in (function (cl, name, valueClass)  : 
+##  ‘longg’ is not a slot in class “mybox”
+
+
+## define the method
+setGeneric('volume', function(object){standardGeneric('volume')})
+
+setMethod('volume', 'mybox', function(object){return(object@long * object@width * object@height)})
+
+volume(myBox)
+##[1] 2000
+
+##现在我们可以总结一下S3类和S4类的区别了。
+##1.在定义S3类的时候，没有显式的定义过程，而定义S4类的时候需要调用函数setClass；
+##2.在初始化S3对象的时候，只是建立了一个list，然后设置其class属性，而初始化S4对象时需要使用函数new；
+##3.提取变量的符号不同，S3为$，而S4为@；
+##4.在应用泛型函数时，S3需要定义f.classname，而S4需要使用setMethod函数；
+##5.在声明泛型函数时，S3使用UseMethod()， 而S4使用setGeneric()。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
