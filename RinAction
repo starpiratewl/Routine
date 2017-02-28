@@ -546,7 +546,63 @@ difftime(today, dob, units = "weeks")
 ## lubricate package contains a number of functions that simplify working with dates
 
 
-## type conversions
+## sorting data
+newdata <- leadership[order(leadership$age), ]
+
+## subseting datasets
+## subset the collumns
+newdata <- leadership[ ,c(6:10)]
+
+myvars <- c("q1", "q2", "q3", "q4", "q5")
+newdata <- leadership[myvars]
+
+myvars <- names(leadership) %in% c("q3", "q4")
+newdata <- leadership[!myvars]
+
+## subset the rows
+newdata <- leadership[1:3, ]
+
+## use which or not??  it is a question...
+newdata <- leadership[which(leadership$gender == "M" & leadership$age > 30), ]
+##newdata
+##  manager       date country gender age q1 q2 q3 q4 q5 stringsAsFactor agecat
+##1       1 2008-10-24      US      M  32  5  4  5  5  5           FALSE  Young
+##4       4 2008-10-12      UK      M  39  3  3  4 NA NA           FALSE  Young
+
+newdata <- leadership[leadership$gender == "M" & leadership$age > 30, ]
+##newdata
+##  manager       date country gender age q1 q2 q3 q4 q5 stringsAsFactor agecat
+##1       1 2008-10-24      US      M  32  5  4  5  5  5           FALSE  Young
+##4       4 2008-10-12      UK      M  39  3  3  4 NA NA           FALSE  Young
+
+
+## subset function
+newdata <- subset(leadership, age >- 35 | age < 24, select = c(q1, q2 ,q3, q4))
+
+newdata <- subset(leadership, gender == "M" & age > 25, select = gender:q4)
+
+## subset random samples
+mysample <- leadership[sample(1:nrow(leadership$), 3, replace = F), ]
+
+
+## using SQL statements to manipulate data frame
+library(sqldf)
+newdf <- sqldf("select * from mtcars where carb = 1 order by mpg", row.names = T)
+newdf
+##                mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+##Valiant        18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+##Hornet 4 Drive 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+##Toyota Corona  21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1
+##Datsun 710     22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+##Fiat X1-9      27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1
+##Fiat 128       32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1
+##Toyota Corolla 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1
+
+sqldf("select avg(mpg) as avg_mpg, avg(disp) as avg_disp, gear from mtcars where cyl in (4,6) group by gear")
+##   avg_mpg avg_disp gear
+##1 20.33333 201.0333    3
+##2 24.53333 123.0167    4
+##3 25.36667 120.1333    5
 
 
 
