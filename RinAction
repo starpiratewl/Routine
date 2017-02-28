@@ -288,6 +288,10 @@ cast(md, cyl+gear ~ variable, fun.aggregate = mean)
 
 
 
+
+
+
+
 ##########################
 ## basic plots
 ##########################
@@ -322,20 +326,227 @@ plot(dose, drugB, type = "b", col = "blue", bg = "green", pch = 2, lty = 6)
 ## That is why the pch have some the same shape but they are asigned different serial numbers
 
 
+## set the size and margins of a plot
+opar <- par(no.readonly = T)
+par(pin = c(4,3))
+par(lwd = 2, cex = 1.5)
+par(cex.axis = 0.75, font.axis = 3)
+plot(dose, drugA, type = "b", pch = 19, lty = 2, col = "red")
+plot(dose, drugB, type = "b", pch = 23, lty = 6, col = "blue", bg = "green")
+par(opar)
+
+
+
+## adding titles
+plot(dose, drugA, type = "b", col = "red", lty = 2, pch = 2, lwd = 2, main = "Clinical Trials for Drug A", sub = "This is hypothetical data", xlab = "Dosage", ylab = "Drug Response", xlim = c(0, 60), ylim = c(0, 70))
+
+## adding axes
+
+x <- c(1:10)
+y <- x
+z <- 10/x
+
+opar <- par(no.readonly = T)
+
+par(mar = c(5,4,4,8) + 0.1)
+
+plot(x, y, type = "b", pch = 21, col = "red", yaxt = "n", lty = 3, ann = FALSE)
+
+lines(x, z, type = "b" , pch = 2, col = "blue", lty = 2)
+
+axis(2, at = x, labels = x, col.axis = "red", las = 2)
+
+axis(4, at = z, labels = round(z, digits = 2), col.axis = "blue", las = 2, cex.axis = 0.7, tck = -0.01)
+
+mtext("y = 1/x", side = 4, line = 3, cex.lab = 1, las = 2, col = "blue")
+
+title("An Example of Creative Axes", xlab = "X values", ylab = "Y=X")
+
+
+## adding minor tick, legend, abline
+
+dose <- c(20,30,40,45,60)
+drugA <- c(16,20,27,40,60)
+drugB <- c(15,18,25,31,40)
+
+opar <- par(no.readonly = T)
+par(lwd = 2, cex = 1.5, font.lab = 2)
+plot(dose, drugA, type = "b", pch = 15, lty = 1, col = "red", ylim = c(0, 60), main = "Drug A vs Drug B", xlab = "Drug Dosage", ylab = "Drug Response")
+
+lines(dose, drugB, type = "b", pch = 17, lty = 2, col = "blue")
+
+abline(h = c(30,15,45), lwd = 1.5, lty = 2, col = "gray")
+
+library(Hmisc)
+minor.tick(nx = 3, ny = 3, tick.ratio = 0.5)
+
+legend("topleft", inset = .05, title = "Drug Type", c("A", "B"), lty = c(1,2), pch = c(15, 17), col = c("red", "blue"))
+
+par(opar)
+
+
+
+## adding text 
+attach(mtcars)
+plot(wt, mpg, main = "Mileage vs Car Weight", xlab = "Weight", ylab = "Mileage", pch = 18, col = "blue")
+text(wt, mpg, row.names(mtcars), cex = 0.6, pos = 4, col = "red")
+detach(mtcars)
+
+
+##adding font famlies
+opar <- par(no.readonly = T)
+par(cex = 1.5)
+plot(1:7, 1:7, type = "n")
+text(3,3, "Example of default text")
+text(4,4, family = "mono", "Example of mono-spaced text")
+text(5,5, family = "serif", "Example of serif text")
+##text(6,6, family = "ArialMT", "Example of ArialMT text")
+par(opar)
+
+
+## combining graphics
+attach(mtcars)
+opar <- par(no.readonly = T)
+par(mfrow = c(2,2))
+plot(wt, mpg, main = "Scatterplot of wt vs mpg")
+plot(wt, disp, main = "Scatterplot of wt vs disp")
+hist(wt, main = "Histgram of wt")
+boxplot(wt, main = "Boxplot of wt")
+par(opar)
+detach(mtcars)
+
+
+## one graph in row 1 and two graphs in row 2
+attach(mtcars)
+layout(matrix(c(1,1,2,3),2,2,byrow = T))
+hist(wt)
+hist(mpg)
+hist(disp)
+detach(mtcars)
+
+
+## adjust the width and height
+attach(mtcars)
+layout(matrix(c(1,1,2,3),2,2,byrow = T), widths = c(3,1), heights = c(1,2))
+hist(wt)
+hist(mpg)
+hist(disp)
+detach(mtcars)
+
+
+## combining different figures with fig parameter control
+opar <- par(no.readonly = T)
+par(fig = c(0, 0.8, 0, 0.8))
+plot(mtcars$wt, mtcars$mpg, xlab = "Miles Per Gallon", ylab = "Car Weight")
+par(fig = c(0,0.8,0.55,1), new = T)
+boxplot(mtcars$wt, horizontal = T, axes = F)
+par(fig = c(0.65, 1, 0, 0.8), new = T)
+boxplot(mtcars$mpg, axes = F)
+mtext("Enhanced Scatterplot", side = 3, outer = T, line = -3)
+par(opar)
 
 
 
 
 
+##########################
+## basic data management
+##########################
+manager <- c(1, 2, 3, 4, 5)
+date <- c("10/24/08", "10/28/08", "10/1/08", "10/12/08", "5/1/09")
+country <- c("US", "US", "UK", "UK", "UK")
+gender <- c("M", "F", "F", "M", "F")
+age <- c(32, 45,25,39, 99)
+q1 <- c(5,3,3,3,2)
+q2 <- c(4,5,5,3,2)
+q3 <- c(5,2,5,4,1)
+q4 <- c(5,5,5,NA,2)
+q5 <- c(5,5,2,NA,1)
+leadership <- data.frame(manager, date, country, gender, age, q1, q2, q3, q4, q5, stringsAsFactor = F)
 
 
+## creating new variables / recoding variables
+leadership$age[leadership$age == 99] <- NA
+
+leadership$agecat[leadership$age > 75] <- "Elder"
+ledaership$agecat[leadership$age >= 55 & leadership$age <= 75] <- "Middle Aged"
+leadership$agecat[leadership$age < 55] <- "Young"
+
+## approach much more neat
+leadership <- within(leadership,{
+        agecat <-NA
+        agecat[age > 75] <- "Elder"
+        agecat[age >= 55 & age <= 75] <- "Middler Aged"
+        agecat[age < 55] <- "Young"
+})
 
 
+## rename the variables
+
+## rename the variables by hand
+fix(leadership)
+
+## rename the variables by "reshape" package
+library(reshape)
+leadership <- rename(leadership, c(manager = "managerID", date = "testDate"))
+
+## rename the variables by names() function
+names(leadership)[2] <- "testDate"
 
 
+## dealing with missing values
+## is.na() function to find the NAs
+## na.rm = T parameter in some functions to exclude the NA while analyse
+## na.omit() deletes any rows with missing data
 
 
+## dealing with date values
+## %d (days 01-31)
+## %a (abbreviated weekday, Mon...)
+## %A (Unabbreviated weekday, Monday...)
+## %m (Month, 00-12)
+## %b (Abbreviated month, Jan...)
+## %B (Unabbreviated month, January)
+## %y (tow digit year 07)
+## %Y (4 digit year 2007)
 
+## the default inputting format
+mydates <- as.Date(c("2007-06-22", "2004-02-13"))
+
+## converts the character data to dates using the format
+strDates <- c("01/05/1965", "08/16/1975")
+dates <- as.Date(strDates, "%m/%d/%Y")
+
+myformat <- "%m/%d/%y"
+leadership$date <- as.Date(leadership$date, myformat)
+
+Sys.Date()
+date()
+
+## output date in a specific format
+today <- Sys.Date()
+format(today, format = "%B %d %Y")
+##[1] "February 28 2017"
+format(today, format = "%A")
+##[1] "Tuesday"
+
+## the inner algrithem in R to store the date value
+startdate <- as.Date("2004-02-13")
+enddate <- as.Date("2001-01-22")
+days <- enddate - startdate
+##> days
+##Time difference of -1117 days
+
+## difftime() function
+today <- Sys.Date()
+dob <- as.Date("1956-10-12")
+difftime(today, dob, units = "weeks")
+##Time difference of 3150.571 weeks
+
+## lubricate package contains a number of functions that simplify working with dates
+
+
+## type conversions
 
 
 
