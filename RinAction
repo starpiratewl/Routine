@@ -498,6 +498,29 @@ y <- dnorm(x)
 plot(x,y, type = "p", xlab = "Normal Deviate", ylab = "Dentsity", yaxs = "i")
 
 
+##已知一个密度函数，不属于任何特定的分布，请问怎么用R求四分位点？像正态分布可以用qnorm函数来求，可是现在只有一个密度函数，怎么求？
+Density<-function(x){
+   (1/sqrt(2*pi))*exp(-x^2/2);
+}
+quan<-function(y){
+    t<-integrate(Density,-Inf,y)$value-1/3;
+}
+uniroot(quan,c(-1,0));
+qnorm(1/3);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##set the seed to make the random number reproducible
 set.seed(1234)
