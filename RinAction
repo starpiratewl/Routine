@@ -100,86 +100,6 @@ close(myconn)
 
 
 
-##计算给定正态分布95%面积下的z分数值
-qnorm(0.95, mean = 0, sd = 1)   ##1.644
-
-
-##计算z分数为0.95时候，正态分布下的面积
-pnorm(0.95, mean = 0, sd = 1)   ##0.8289
-
-
-##计算在给定的正态分布内，取到特定值的概率
-dnorm(0.95, mean = 0,sd = 1)    ##0.254
-
-
-##给出一个既定范围，既定数量的正态分布
-rnorm(100, mean = 0, sd = 1)  ##一个数量为100，均值为0，sd为1的分布
-
-
-pnorm(9.75,mean = 10, sd = 0.125) 
-pnorm(10.25, mean = 10, sd = 0.125)
-
-pnorm(9.75,mean = 10, sd = 0.125) + (1 - pnorm(10.25, mean = 10, sd = 0.125))
-
-pnorm(10.25, mean = 9.7, sd = 0.0875) - pnorm(9.75,mean = 9.7, sd = 0.0875)
-
-
-##从9.9到9.1，随着离原始均值10偏差越来越大，检验功效越来越高，说明检测出有问题的概率越来越高，9.5之后，就基本是100%了
-pnorm(9.75,mean = 9.1, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.1, sd = 0.0875))
-pnorm(9.75,mean = 9.2, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.2, sd = 0.0875))
-pnorm(9.75,mean = 9.3, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.3, sd = 0.0875))
-pnorm(9.75,mean = 9.4, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.4, sd = 0.0875))
-pnorm(9.75,mean = 9.5, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.5, sd = 0.0875))
-pnorm(9.75,mean = 9.6, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.6, sd = 0.0875))
-pnorm(9.75,mean = 9.7, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.7, sd = 0.0875))
-pnorm(9.75,mean = 9.8, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.8, sd = 0.0875))
-pnorm(9.75,mean = 9.9, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.9, sd = 0.0875))
-
-
-##随着sd越来越大，检验功效越来越高，说明检测出有问题的概率越来越高，但是功效增长幅度没有均值变化来的显著
-1- pnorm(10.25, mean = 10, sd = 0.0875) + pnorm(9.75,mean = 10, sd = 0.0875)
-1-pnorm(10.25, mean = 10, sd = 0.0975) + pnorm(9.75,mean = 10, sd = 0.0975)
-1-pnorm(10.25, mean = 10, sd = 0.1075) + pnorm(9.75,mean = 10, sd = 0.1075)
-1-pnorm(10.25, mean = 10, sd = 0.1175) + pnorm(9.75,mean = 10, sd = 0.1175)
-1-pnorm(10.25, mean = 10, sd = 0.1275) + pnorm(9.75,mean = 10, sd = 0.1275)
-1-pnorm(10.25, mean = 10, sd = 0.1375) + pnorm(9.75,mean = 10, sd = 0.1375)
-1-pnorm(10.25, mean = 10, sd = 0.1475) + pnorm(9.75,mean = 10, sd = 0.1475)
-1-pnorm(10.25, mean = 10, sd = 0.1575) + pnorm(9.75,mean = 10, sd = 0.1575)
-1-pnorm(10.25, mean = 10, sd = 0.1675) + pnorm(9.75,mean = 10, sd = 0.1675)
-1-pnorm(10.25, mean = 10, sd = 0.1775) + pnorm(9.75,mean = 10, sd = 0.1775)
-1-pnorm(10.25, mean = 10, sd = 0.1875) + pnorm(9.75,mean = 10, sd = 0.1875)
-1-pnorm(10.25, mean = 10, sd = 0.1975) + pnorm(9.75,mean = 10, sd = 0.1975)
-
-
-
-
-
-
-
-library(MASS)
-options(digits=3)
-set.seed(1234)
-mean <- c(230.7, 146.7, 3.6)
-sigma <- matrix(c(15360.8, 6721.2, -47.1,6721.2, 4700.9, -16.5,-47.1, -16.5, 0.3), nrow=3, ncol=3)
-mydata <- mvrnorm(500, mean, sigma)
-mydata <- as.data.frame(mydata)
-names(mydata) <- c("y","x1","x2")
-dim(mydata)
-##[1] 500 3
-head(mydata, n=10)
-##       y    x1   x2
-##1   98.8  41.3 3.43
-##2  244.5 205.2 3.80
-##3  375.7 186.7 2.51
-##4  -59.2  11.2 4.71
-##5  313.0 111.0 3.45
-##6  288.8 185.1 2.72
-##7  134.8 165.0 4.39
-##8  171.7  97.4 3.64
-##9  167.2 101.0 3.50
-##10 121.1  94.5 4.10
-
-
 
 
 
@@ -603,6 +523,163 @@ sqldf("select avg(mpg) as avg_mpg, avg(disp) as avg_disp, gear from mtcars where
 ##1 20.33333 201.0333    3
 ##2 24.53333 123.0167    4
 ##3 25.36667 120.1333    5
+
+
+
+
+
+
+############################
+## advanced data management
+############################
+##scale() function standardize the specified columns of a matrix or data frame to a mean of 0 and a standard deviation of 1
+## actually scale() function get the Z scores of a vector
+
+
+
+
+
+##计算给定正态分布95%面积下的z分数值
+qnorm(0.95, mean = 0, sd = 1)   ##1.644
+
+
+##计算z分数为0.95时候，正态分布下的面积
+pnorm(0.95, mean = 0, sd = 1)   ##0.8289
+
+
+##计算在给定的正态分布内，取到特定值的概率
+dnorm(0.95, mean = 0,sd = 1)    ##0.254
+
+
+##给出一个既定范围，既定数量的正态分布
+rnorm(100, mean = 0, sd = 1)  ##一个数量为100，均值为0，sd为1的分布
+
+
+pnorm(9.75,mean = 10, sd = 0.125) 
+pnorm(10.25, mean = 10, sd = 0.125)
+
+pnorm(9.75,mean = 10, sd = 0.125) + (1 - pnorm(10.25, mean = 10, sd = 0.125))
+
+pnorm(10.25, mean = 9.7, sd = 0.0875) - pnorm(9.75,mean = 9.7, sd = 0.0875)
+
+
+##从9.9到9.1，随着离原始均值10偏差越来越大，检验功效越来越高，说明检测出有问题的概率越来越高，9.5之后，就基本是100%了
+pnorm(9.75,mean = 9.1, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.1, sd = 0.0875))
+pnorm(9.75,mean = 9.2, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.2, sd = 0.0875))
+pnorm(9.75,mean = 9.3, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.3, sd = 0.0875))
+pnorm(9.75,mean = 9.4, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.4, sd = 0.0875))
+pnorm(9.75,mean = 9.5, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.5, sd = 0.0875))
+pnorm(9.75,mean = 9.6, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.6, sd = 0.0875))
+pnorm(9.75,mean = 9.7, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.7, sd = 0.0875))
+pnorm(9.75,mean = 9.8, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.8, sd = 0.0875))
+pnorm(9.75,mean = 9.9, sd = 0.0875) + (1 - pnorm(10.25, mean = 9.9, sd = 0.0875))
+
+
+##随着sd越来越大，检验功效越来越高，说明检测出有问题的概率越来越高，但是功效增长幅度没有均值变化来的显著
+1- pnorm(10.25, mean = 10, sd = 0.0875) + pnorm(9.75,mean = 10, sd = 0.0875)
+1-pnorm(10.25, mean = 10, sd = 0.0975) + pnorm(9.75,mean = 10, sd = 0.0975)
+1-pnorm(10.25, mean = 10, sd = 0.1075) + pnorm(9.75,mean = 10, sd = 0.1075)
+1-pnorm(10.25, mean = 10, sd = 0.1175) + pnorm(9.75,mean = 10, sd = 0.1175)
+1-pnorm(10.25, mean = 10, sd = 0.1275) + pnorm(9.75,mean = 10, sd = 0.1275)
+1-pnorm(10.25, mean = 10, sd = 0.1375) + pnorm(9.75,mean = 10, sd = 0.1375)
+1-pnorm(10.25, mean = 10, sd = 0.1475) + pnorm(9.75,mean = 10, sd = 0.1475)
+1-pnorm(10.25, mean = 10, sd = 0.1575) + pnorm(9.75,mean = 10, sd = 0.1575)
+1-pnorm(10.25, mean = 10, sd = 0.1675) + pnorm(9.75,mean = 10, sd = 0.1675)
+1-pnorm(10.25, mean = 10, sd = 0.1775) + pnorm(9.75,mean = 10, sd = 0.1775)
+1-pnorm(10.25, mean = 10, sd = 0.1875) + pnorm(9.75,mean = 10, sd = 0.1875)
+1-pnorm(10.25, mean = 10, sd = 0.1975) + pnorm(9.75,mean = 10, sd = 0.1975)
+
+
+
+x <- pretty(c(-3,3), 30)
+y <- dnorm(x)
+plot(x,y, type = "b", xlab = "Normal Deviate", ylab = "Dentsity", yaxs = "i")
+
+##（1）以一个班级的身高为例，概率密度的几何意义是不是就是各身高区间的柱状图？---yes
+##（2）如果要求某一身高区间的概率P，就是用该区间密度函数的面积除以全域面积，即这个区间的积分，因为全域的面积是1，所以P=该区间的面积=该区间密度函数的积分=分布函数在该区间的值。这样理解对吗？ ---yse
+
+
+##概率密度函数是用来描述连续型随机变量取值的密集程度的,
+##比如某地某次考试的成绩近似服从均值为80的正态分布,即平均分是80分,由正态分布的图形知x=80时的函数值最大,即随机变量在80附近取值最密集,也即考试成绩在80分左右的人最多.
+
+
+## this plot has a flat top
+x <- pretty(c(-3,3), 3000)
+hist(x, freq = F)
+lines(density(x), col = "blue")
+
+## this plot like a normal distribution
+x <- rnorm(100)
+hist(x, freq = F)
+lines(density(x), col = "blue")
+
+## this plot like a normal distribution
+x <- rnorm(100)
+y <- dnorm(x)
+plot(x,y, type = "p", xlab = "Normal Deviate", ylab = "Dentsity", yaxs = "i")
+
+
+
+##set the seed to make the random number reproducible
+set.seed(1234)
+runif(5)
+
+
+## generating multivariate normal data
+library(MASS)
+options(digits=3)
+set.seed(1234)
+mean <- c(230.7, 146.7, 3.6)
+sigma <- matrix(c(15360.8, 6721.2, -47.1,6721.2, 4700.9, -16.5,-47.1, -16.5, 0.3), nrow=3, ncol=3)
+mydata <- mvrnorm(500, mean, sigma)
+mydata <- as.data.frame(mydata)
+names(mydata) <- c("y","x1","x2")
+dim(mydata)
+##[1] 500 3
+head(mydata, n=10)
+##       y    x1   x2
+##1   98.8  41.3 3.43
+##2  244.5 205.2 3.80
+##3  375.7 186.7 2.51
+##4  -59.2  11.2 4.71
+##5  313.0 111.0 3.45
+##6  288.8 185.1 2.72
+##7  134.8 165.0 4.39
+##8  171.7  97.4 3.64
+##9  167.2 101.0 3.50
+##10 121.1  94.5 4.10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
