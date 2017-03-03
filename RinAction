@@ -694,12 +694,12 @@ cast(md, cyl+gear ~ variable, fun.aggregate = mean)
 
 
 
-
+6222021302021067979
 ##########################
 ## barplot
 ##########################
 library(vcd)
-ounts <- table(Arthritis$Improved)
+counts <- table(Arthritis$Improved)
 counts
 ##  None   Some Marked 
 ##    42     14     28 
@@ -707,16 +707,31 @@ counts
 ## simple bar plot
 barplot(counts,main="Simple Bar Plot",xlab="Improvement", ylab="Frequency")
 
+
 ## horizontal bar plot
 barplot(counts,main="Horizontal Bar Plot",xlab="Frequency", ylab="Improvement",horiz=TRUE)
 
 
 ## the same plot as mentioned above. but here we use Arthritis$Improved straightly without table() functionm because
 ## Arthritis$Improved is a factor variable
+## The following plot() function will automatically generate barplot, because the input dataset are factor
+## if the input data class is not factor,  it will not generate barplot but the plot with very "thin" bars
 plot(Arthritis$Improved, main="Simple Bar Plot",xlab="Improved", ylab="Frequency")
 plot(Arthritis$Improved, horiz=TRUE, main="Horizontal Bar Plot",xlab="Frequency", ylab="Improved")
 
+## so what should I do if I want to manipulate the bar sequence of the plot?
+## For example I want the bar ploted in an order of length from the longest to shortest or from the shortest to the longest
+## the sequence of the bars in a barplot is determined by the sequence of the columns in the input data
+counts <- table(Arthritis$Improved)
+countshaha <- counts[c(1,3,2)]
+barplot(countshaha, main = "Simple Bar Plot", xlab = "Improved", ylab = "Frequency")
 
+## if the columns are too many, it is hard for us to specify the order bu hand, maybe we can make use of the order() function
+countshaha <- counts[order(counts)]
+barplot(countshaha, main = "Simple Bar Plot", xlab = "Improved", ylab = "Frequency")
+
+countshaha <- counts[order(counts, decreasing = T)]
+barplot(countshaha, main = "Simple Bar Plot", xlab = "Improved", ylab = "Frequency")
 #####################################
 ## Stacked and grouped bar plots
 #####################################
@@ -799,6 +814,7 @@ detach(Arthritis)
 #####################################
 ##  pie chart
 #####################################
+
 par(mfrow=c(2, 2))
 slices <- c(10, 12,4, 16, 8)
 lbls <- c("US", "UK", "Australia", "Germany", "France")
@@ -831,6 +847,7 @@ fan.plot(slices, labels = lbls, main="Fan Plot")
 #####################################
 ##  Histograms
 #####################################
+
 par(mfrow=c(2,2))
 
 hist(mtcars$mpg)
@@ -838,7 +855,7 @@ hist(mtcars$mpg)
 hist(mtcars$mpg,breaks=12, col="red",xlab="Miles Per Gallon",main="Colored histogram with 12 bins")
 
 hist(mtcars$mpg,freq=FALSE, breaks=12,col="red",xlab="Miles Per Gallon",main="Histogram, rug plot, density curve")
-rug(jitter(mtcars$mpg))
+rug(jitter(mtcars$mpg, amount=0.01))
 lines(density(mtcars$mpg), col="blue", lwd=2)
 
 x <- mtcars$mpg
@@ -851,7 +868,11 @@ lines(xfit, yfit, col="blue", lwd=2)
 
 box()
 
-
+##freq为T或true时，是频数。
+##
+##默认时也是频数，当breaks之间的间隔不相同时，就会变成密度。
+##
+##用频数时，因为直方图面积没意义，会有警告信息
 
 
 
@@ -866,8 +887,22 @@ plot(d)
 d <- density(mtcars$mpg)
 plot(d, main="Kernel Density of Miles Per Gallon")
 polygon(d, col="red", border="blue")
-rug(mtcars$mpg, col="brown")
+rug(mtcars$mpg, col="green")
 
+
+##test of polygon()
+## this polygon is not rectangular, because R draw the polygon follow the points in orders
+## the following points order are(1,1)(3,1)(1,3)(3,3)
+haha1 <- c(1,3,1,3)
+haha2 <- c(1,1,3,3)
+plot(haha1,haha2)
+polygon(haha1,haha2)
+
+##try this, and the polygon is a rectangle
+haha1 <- c(1,1,3,3)
+haha2 <- c(1,3,3,1)
+plot(haha1,haha2)
+polygon(haha1,haha2)
 
 
 ## compare the groups and set the legend
@@ -881,7 +916,10 @@ colfill<-c(2:(1+length(levels(cyl.f))))
 legend(locator(1), levels(cyl.f), fill=colfill)
 detach(mtcars)
 
-
+##there are many latent tricks in the above codes
+## first why we creat a cyl.f factor variable here is to be used in the legned function 
+## second why the legend fill color appointed by the colfill is the same with the color in the plot? the colfill variable got a sequence from 2 to 4, is has three values 2,3,4, so the built-in color selection in the sm.density.compare() fcuntion must follow the same pattern, it should start from 2, and have the kinds of colors which is the same as the length of the compared groups, that whywe can specify the color in the legend like this
+## locator(1) enable the user to place the legend interactively
 
 
 
@@ -895,7 +933,7 @@ boxplot.stats(mtcars$mpg)
 
 boxplot(mpg ~ cyl, data=mtcars,main="Car Mileage Data",xlab="Number of Cylinders",ylab="Miles Per Gallon")
 
-boxplot(mpg ~ cyl, data=mtcars,notch=TRUE,varwidth=TRUE,col="red",main="Car Mileage Data",xlab="Number of Cylinders",ylab="Miles Per Gallon")
+boxplot(mpg ~ cyl, data=mtcars, notch=TRUE,varwidth=TRUE,col="red",main="Car Mileage Data",xlab="Number of Cylinders",ylab="Miles Per Gallon")
 
 mtcars$cyl.f <- factor(mtcars$cyl,levels=c(4,6,8),labels=c("4","6","8"))
 mtcars$am.f <- factor(mtcars$am,levels=c(0,1),labels=c("auto", "standard"))
