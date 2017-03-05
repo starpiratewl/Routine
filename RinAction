@@ -938,6 +938,26 @@ boxplot(mpg ~ cyl, data=mtcars, notch=TRUE,varwidth=TRUE,col="red",main="Car Mil
 mtcars$cyl.f <- factor(mtcars$cyl,levels=c(4,6,8),labels=c("4","6","8"))
 mtcars$am.f <- factor(mtcars$am,levels=c(0,1),labels=c("auto", "standard"))
 boxplot(mpg ~ am.f *cyl.f,data=mtcars,varwidth=TRUE,col=c("gold","darkgreen"),main="MPG Distribution by Auto Type",xlab="Auto Type")
+## here the x.axis text are very short, so it seem that the x.axis is not very crowded(throng, conjested,aswarm), but if our labels of the x.axis are very long? how can we arrange the angle of the text to make the x.axis not so conjested?
+
+ganggang <- c("four_gang","six_gang","eight_gang")
+dongdong <- c("zidong","shoudong")
+mtcars$cyl.f <- factor(mtcars$cyl, levels = c(4,6,8), labels = ganggang)
+mtcars$am.f <- factor(mtcars$am, levels = c(0,1), labels = dongdong)
+par(mar = c(15,4,4,2), las = 2)
+posix <-boxplot(mpg~ cyl.f*am.f, data = mtcars, varwidth = T, col = c("red","blue"), main = "MPG Distribution by Auto Type(with long X texts)", xlab = "Auto Type")
+##text(x = c(2,4,6,8,10,12), y = -5, labels = paste(rep(dongdong,each=3),rep(ganggang, each = 2), sep = "_"), cex = 5, srt = 90)
+## text() function cannot do this because it can only add text within the area of plot
+##axis(1,1:6, paste(rep(dongdong,times = 3),rep(ganggang, each = 2), sep = "_"))
+## axis cannot do this either because it can not manipuate the angle of the text
+## we can not achieve that within the text() and boxplot() function, so we have to do it in par() function
+
+## pay more attention here, in this plot we use names = F to mask the text of x.axis, but the seq of bars is also different from before. so when we add the labels via text() function, we should make sure the corresponding between bars and text are correct
+## we can also adjust the seq of bars or the seq of text
+## to compare the different plots , we need to see more than one plot at the same time in the R gui, but usually we can only plot one figure in R, one solution to this is dev.new() function to set the new plot to a new device for comparing
+
+
+
 
 
 
@@ -947,7 +967,7 @@ boxplot(mpg ~ am.f *cyl.f,data=mtcars,varwidth=TRUE,col=c("gold","darkgreen"),ma
 
 library(vioplot)
 x1 <- mtcars$mpg[mtcars$cyl==4]
-## notice "mtcars[mtcars$cyl==4,]$mpg"  is equal to "mtcars$mpg[mtcars$cyl==4]"
+## notice "mtcars[mtcars$cyl==4,]$mpg"  is equal to "mtcars$mpg[mtcars$cyl==4]"  and "mtcars[mtcars$cyl==4,]$mpg"
 x2 <- mtcars$mpg[mtcars$cyl==6]
 x3 <- mtcars$mpg[mtcars$cyl==8]
 vioplot(x1, x2, x3,names=c("4 cyl", "6 cyl", "8 cyl"),col="gold")
@@ -979,31 +999,66 @@ x$color[x$cyl==8] <- "darkgreen"
 
 dotchart(x$mpg, labels = row.names(x), cex=.7, groups = x$cyl, gcolor = "black", color = x$color, pch=19, main = "Gas Mileage for Car Models\ngrouped by cylinder", xlab = "Miles Per Gallon")
 
-x$pch <- as.numeric(x$cyl)
-dotchart(x$mpg, labels = row.names(x), cex=.7, groups = x$cyl, gcolor = "black", color = x$color, pch=as.numeric(x$cyl), main = "Gas Mileage for Car Models\ngrouped by cylinder", xlab = "Miles Per Gallon")
+x$pch[x$cyl==4] <- 1
+x$pch[x$cyl==6] <- 2
+x$pch[x$cyl==8] <- 3
+
+dotchart(x$mpg, labels = row.names(x), cex=.7, groups = x$cyl, gcolor = "black", color = x$color, pch=x$pch, main = "Gas Mileage for Car Models\ngrouped by cylinder", xlab = "Miles Per Gallon")
 
 dotchart(x$mpg, labels = row.names(x), cex=.7, gcolor = "black", pch=x$pch, main = "Gas Mileage for Car Models\ngrouped by cylinder", xlab = "Miles Per Gallon")
 
-dotchart(x$mpg, labels = row.names(x), cex=.7, groups = x$cyl, gcolor = "black", color = x$color, gpch=x$cyl, main = "Gas Mileage for Car Models\ngrouped by cylinder", xlab = "Miles Per Gallon")
+dotchart(x$mpg, labels = row.names(x), cex=.7, groups = x$cyl, gcolor = "black", color = x$color, gpch=as.numeric(x$cyl), main = "Gas Mileage for Car Models\ngrouped by cylinder", xlab = "Miles Per Gallon")
 
 
 
 
+#########################################
+## basic statistics
+#########################################
+
+#########################################
+## descriptive statistics
+
+vars <- c("mpg", "hp", "wt")
+head(mtcars[vars])
+##                   mpg  hp    wt
+##Mazda RX4         21.0 110 2.620
+##Mazda RX4 Wag     21.0 110 2.875
+##Datsun 710        22.8  93 2.320
+##Hornet 4 Drive    21.4 110 3.215
+##Hornet Sportabout 18.7 175 3.440
+##Valiant           18.1 105 3.460
 
 
+summary(mtcars[vars])
+##      mpg              hp              wt       
+## Min.   :10.40   Min.   : 52.0   Min.   :1.513  
+## 1st Qu.:15.43   1st Qu.: 96.5   1st Qu.:2.581  
+## Median :19.20   Median :123.0   Median :3.325  
+## Mean   :20.09   Mean   :146.7   Mean   :3.217  
+## 3rd Qu.:22.80   3rd Qu.:180.0   3rd Qu.:3.610  
+## Max.   :33.90   Max.   :335.0   Max.   :5.424
 
 
+mystats <- function(x, na.omit = F){
+        if(na.omit){
+                x <- x[!is.na(x)]
+        }
+        m <- mean(x)
+        n <- length(x)
+        s <- sd(x)
+        skew <- sum((x - m)^3/s^3)/n
+        kurt <- sum((x - m)^4/s^4)/n - 3
+        return(c(n = n , mean = m, stdev = s, skew = skew, kurtosis = kurt))
+}
 
-
-
-
-
-
-
-
-
-
-
+sapply(mtcars[vars], mystats)
+##               mpg          hp          wt
+##n        32.000000  32.0000000 32.00000000
+##mean     20.090625 146.6875000  3.21725000
+##stdev     6.026948  68.5628685  0.97845744
+##skew      0.610655   0.7260237  0.42314646
+##kurtosis -0.372766  -0.1355511 -0.02271075
 
 
 
