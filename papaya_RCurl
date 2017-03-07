@@ -1,0 +1,282 @@
+library(RCurl)
+
+## to see if a url really exist
+url.exists(url="www.baidu.com")
+
+d <- debugGatherer() #收集调试信息
+# verbose = TRUE 这时候，d$value()值是会叠加的
+tmp <- getURL(url="www.baidu.com", debugfunction = d$update, verbose = TRUE)  
+
+names(d$value())
+# [1] "text"       "headerIn"   "headerOut"  "dataIn"     "dataOut"    "sslDataIn"  "sslDataOut"
+
+cat(d$value()[1]) #服务器地址及端口号
+cat(d$value()[2]) #服务器返回的头信息
+cat(d$value()[3]) #提交给服务器的头信息
+d$reset() # 清除d$value()
+d$value() # 清除之后全部为空
+##      text   headerIn  headerOut     dataIn    dataOut  sslDataIn sslDataOut 
+##        ""         ""         ""         ""         ""         ""         "" 
+
+
+
+# 查看服务器返回的头信息
+## 列表形式
+h <- basicHeaderGatherer()
+txt <- getURL(url="http://www.baidu.com", headerfunction = h$update)
+names(h$value())
+##[1] "Date"            "Content-Type"    "Content-Length"  "Last-Modified"   "Connection"      "Vary"            "Set-Cookie"      "Set-Cookie"      "Set-Cookie"      "P3P"             "Server"         
+##[12] "X-UA-Compatible" "Pragma"          "Cache-control"   "Accept-Ranges"   "status"          "statusMessage"  
+h$value()
+
+
+# 查看服务器返回的头信息
+## 字符串形式
+h <- basicTextGatherer()
+txt <- getURL("http://www.baidu.com", headerfunction = h$update)
+names(h$value())
+# NULL # 说明是字符串形式，没有列
+h$value() # 所有的内容只是一个字符串
+# [1] "HTTP/1.1 200 OK\r\nDate: Mon, 23 Feb 2015 15:18:28 GMT\r\nContent-Type: text/html\r\nContent-Length: 14613\r\nLast-Modified: Wed, 03 Sep 2014 02:48:32 GMT\r\nConnection: Keep-Alive\r\nVary: Accept-Encoding\r\nSet-Cookie: BAIDUID=FFF680C9F9631969198A77AAFF56096E:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com\r\nSet-Cookie: BAIDUPSID=FFF680C9F9631969198A77AAFF56096E; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com\r\nSet-Cookie: BDSVRTM=0; path=/\r\nP3P: CP=\" OTI DSP COR IVA OUR IND COM \"\r\nServer: BWS/1.1\r\nPragma: no-cache\r\nCache-control: no-cache\r\nBDPAGETYPE: 1\r\nBDQID: 0xc1ae773200820725\r\nBDUSERID: 0\r\nAccept-Ranges: bytes\r\n\r\n"
+
+
+cat(h$value()) # 用cat显示的，会比较好看
+##HTTP/1.1 200 OK
+
+##Date: Tue, 07 Mar 2017 07:01:34 GMT
+
+##Content-Type: text/html
+
+##Content-Length: 14613
+
+##Last-Modified: Mon, 27 Feb 2017 08:25:00 GMT
+
+##Connection: Keep-Alive
+
+##Vary: Accept-Encoding
+
+##Set-Cookie: BAIDUID=BAD6A9B944DBD6E699ED83B0E8080D02:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+
+##Set-Cookie: BIDUPSID=BAD6A9B944DBD6E699ED83B0E8080D02; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+
+##Set-Cookie: PSTM=1488870094; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+
+##P3P: CP=" OTI DSP COR IVA OUR IND COM "
+
+##Server: BWS/1.1
+
+##X-UA-Compatible: IE=Edge,chrome=1
+
+##Pragma: no-cache
+
+##Cache-control: no-cache
+
+##Accept-Ranges: bytes
+
+
+# 查看url请求的访问信息
+curl <- getCurlHandle()
+
+txt <- getURL(url="http://www.baidu.com", curl = curl)
+names(getCurlInfo(curl))
+
+##[1] "effective.url"           "response.code"           "total.time"              "namelookup.time"         "connect.time"            "pretransfer.time"        "size.upload"            
+##[8] "size.download"           "speed.download"          "speed.upload"            "header.size"             "request.size"            "ssl.verifyresult"        "filetime"               
+##[15] "content.length.download" "content.length.upload"   "starttransfer.time"      "content.type"            "redirect.time"           "redirect.count"          "private"                
+##[22] "http.connectcode"        "httpauth.avail"          "proxyauth.avail"         "os.errno"                "num.connects"            "ssl.engines"             "cookielist"             
+##[29] "lastsocket"              "ftp.entry.path"          "redirect.url"            "primary.ip"              "appconnect.time"         "certinfo"                "condition.unmet"
+
+
+getCurlInfo(curl)$response.code
+# [1] 200
+
+getCurlInfo(curl=curl)
+##$effective.url
+##[1] "http://www.baidu.com"
+##
+##$response.code
+##[1] 200
+##
+##$total.time
+##[1] 0.041523
+##
+##$namelookup.time
+##[1] 0.011336
+##……
+
+
+
+# 设置自己的header，把系统设置成ihpone的系统Mac OS
+myheader <- c(
+  "User-Agent"="Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0_1 like Mac OS X; ja-jp) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A306 Safari/6531.22.7",
+  "Accept"="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language"="en-us",
+  "Connection"="keep-alive",
+  "Accept-Charset"="GB2312,utf-8;q=0.7,*;q=0.7"
+)
+
+d <- debugGatherer()
+tmp <- getURL(url = "http://www.baidu.com", httpheader = myheader, debugfunction = d$update, verbose = T)
+
+cat(d$value()[3]) # 提交给服务器的头信息，发现设置成功
+##
+##GET / HTTP/1.1
+##Host: www.baidu.com
+##User-Agent: Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0_1 like Mac OS X; ja-jp) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A306 Safari/6531.22.7
+##Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+##Accept-Language: en-us
+##Connection: keep-alive
+##Accept-Charset: GB2312,utf-8;q=0.7,*;q=0.7
+
+
+
+
+
+
+# getForm()函数
+
+# 在百度里面搜索“rcurl”的url为（浏览器为google chrome）：
+url <- c("http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=2&ch=&tn=SE_hldp02870_0v135xhf&bar=&wd=rcurl&rsv_spt=1&rsv_pq=a3ed162a0088df8f&rsv_t=43d18gWNyd6HWpqDiKov7Dm548s4HY4cgcJlXc8ujpzRW9Okec2aOb5screzftZo5DJ60Cp7aILvRK2Q&rsv_enter=1&inputT=2119")
+
+# wd=rcurl 这里就是关键字为rcurl
+
+getFormParams(query=url) # 查看url的结构和值
+names(getFormParams(query=url))
+##[1] "ie"        "f"         "rsv_bp"    "rsv_idx"   "ch"        "tn"        "bar"       "wd"        "rsv_spt"  
+##[10] "rsv_pq"    "rsv_t"     "rsv_enter" "inputT"   
+
+tmp <- getForm(uri="http://www.baidu.com/s", ie="utf-8", f="8", rsv_bp="1", rsv_idx="2", ch="", tn="SE_hldp02870_0v135xhf", bar="", wd="rcurl", rsv_spt="1", rsv_pq="a3ed162a0088df8f", rsv_t="43d18gWNyd6HWpqDiKov7Dm548s4HY4cgcJlXc8ujpzRW9Okec2aOb5screzftZo5DJ60Cp7aILvRK2Q", rsv_enter="1", inputT="2119")
+
+# 这里的getForm函数不稳定(原因还不知道)，有时候运行2到3次，才能真正找到页面
+# 出来的错误的结果，爬取的页面为：
+[1] "<html><body><script type=\"text/javascript\">function d(a,n){var c=a.length,b=a[c-1];if(n&&n!='JSSESSID'){for(var i=c-2;i>=0;i--){b=a[i]+'.'+b;document.cookie=n+'=; domain='+b+'; expires=Mon,01-Jan-1973 00:00:01 GMT';}}}(function (){var a=document.cookie.split('; ');for(var i=0;i<a.length;i++){d(location.hostname.split('.'),a[i].split('=')[0])}})();(function(u){if(window.navigate&&typeof navigate=='function')navigate(u);var ua=navigator.userAgent;if(ua.match(/applewebkit/i)){var h = document.createElement('a');h.rel='noreferrer';h.href=u;document.body.appendChild(h);var evt=document.createEvent('MouseEvents');evt.initEvent('click', true,true);h.dispatchEvent(evt);}else{document.write('<meta http-equiv=\"Refresh\" Content=\"0; Url='+u+'\" >');}})('http://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=2&ch=&tn=SE_hldp01272_4chwhad3&bar=&wd=rcurl&rsv_spt=1&rsv_pq=a3ed162a0088df8f&rsv_t=43d18gWNyd6HWpqDiKov7Dm548s4HY4cgcJlXc8ujpzRW9Okec2aOb5screzftZo5DJ60Cp7aILvRK2Q&rsv_enter=1&inputT=2119');</script></body></html>"
+attr(,"Content-Type")
+
+"text/html" 
+
+
+
+##postForm()
+##以保密的形式上传我们所要页面提交的信息，然后获取服务器端返回该页面信息。例如登陆一个页面，需要账户和密码，那么我们需要提交账户和密码，提交的信息要加密，然后抓取登陆后的页面信息。
+
+# getBinaryURL() 下载一个文件
+url <- "http://rfunction.com/code/1201/120103.R"
+tmp <- getBinaryURL(url)
+note <- file("120103.R", open = "wb")
+writeBin(tmp, note)
+close(note)
+
+
+# getBinaryURL() 批量下载文件
+url <- "http://rfunction.com/code/1202/"
+tmp <- RCurl::getURL(url, httpheader = myheader) # 获取网页
+
+tmp_files <- strsplit(x=tmp, split="<li><a href=\"")[[1]]
+tmp_files1 <- strsplit(tmp_files, split="\"")
+tmp_files2 <- lapply(X=tmp_files1, function(file) {file[1]})
+files <- unlist(tmp_files2)
+files <- files[c(-1, -2)]
+
+baseURL <- "http://rfunction.com/code/1202/"
+for(i in 1:length(files)){
+  fullURL <- paste(baseURL, files[i], sep = "")
+  tmp <- getBinaryURL(fullURL)
+  note <- file(paste("1202-", files[i], sep = ""), open = "wb")
+  writeBin(tmp, note)
+  close(note)
+
+  Sys.sleep(2) # 休眠2秒
+}
+
+
+
+# XML简介
+# 缺点：在windows下对中文支持不理想（我在ubuntu下也不理想）
+library(XML)
+url <- "http://data.earthquake.cn/datashare/datashare_more_quickdata_new.jsp" # 中文界面，抓出来是乱码
+url <- "http://219.143.71.11/wdc4seis@bj/earthquakes/csn_quakes_p001.jsp" # 英文界面，抓出来是对的
+wp <- getURL(url)
+doc <-htmlParse(wp, asText = TRUE) # 这里切记encoding  
+tables <- readHTMLTable(doc, header=F, which = 2)
+# 选取第二个表
+head(tables)
+                    V1      V2       V3        V4    V5                               V6
+1      Origin time(CST) Lat(°) Long(°) Depth(km)   Mag                           Region
+2 2012/01/08 14:20:08.0   42.10    87.50       7.0 M 5.0         NORTHERN XINJIANG, CHINA
+3 2012/01/01 13:27:55.5   31.40   138.30     360.0 M 7.0       SOUTHEAST OF HONSHU, JAPAN
+4 2011/12/27 23:21:58.5   51.80    95.90      10.0 M 7.0     SOUTHWESTERN SIBERIA, RUSSIA
+5 2011/12/14 13:04:56.2   -7.50   146.80     120.0 M 7.2  EASTERN NEW GUINEA REG., P.N.G.
+6 2011/12/12 09:42:34.0   39.60   118.20       5.0 M 3.2               NORTHEASTERN CHINA
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################################################################
+## RCurl case study
+#################################################################################################
+require(RCurl)
+url="http://data2.7m.cn/history_Matches_Data/2013-2014/92/big/fixture.js"
+myheader=c("Accept"="text/html, application/xhtml+xml, */*",
+"Referer"="http://data2.7m.cn/matches_data/92/big/index.shtml",
+"Accept-Language"="zh-CN",
+"User-Agent"="Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.48 Safari/537.36 QQBrowser/7.7.31732.400",
+"Accept-Encoding"="gzip, deflate",
+"Connection"="Keep-Alive"
+)
+t=basicTextGatherer()
+temp=getURL(url,httpHeader=myheader,write=t,verbose=T,.encoding="UTF-8")
+
+rd<-strsplit(t$value(),"\r\n")
+
+rd[[1]][6]#轮次
+rd[[1]][7]#比赛时间
+rd[[1]][8]#比分
+rd[[1]][11]#主队
+rd[[1]][12]#客队
+
+
+p_round<-regexpr("(\\d,)+(\\d{2},)+\\d{2}",rd[[1]][6])
+c_round<-substr(rd[[1]][6],p_round[1],attr(p_round,"match.length")+p_round[1]-1)
+rounds<-strsplit(c_round,",")#轮次
+
+
+
+p_match_time<-regexpr('\\d{4},\\d{2},\\d{2},\\d{2},\\d{2},\\d{2}\\",(\\"\\d{4},\\d{2},\\d{2},\\d{2},\\d{2},\\d{2}\\",)+(\\"\\d{4},\\d{2},\\d{2},\\d{2},\\d{2},\\d{2})',rd[[1]][7])
+c_match_time<-substr(rd[[1]][7],p_match_time[1],attr(p_match_time,"match.length")+p_match_time[1]-1)
+match_time<-strsplit(c_match_time,'\\",\\"')#比赛时间
+
+
+p_scores<-regexpr('(\\d-\\d\\(\\d-\\d\\)\\",)(\\"\\d-\\d\\(\\d-\\d\\)\\",)+(\\"\\d-\\d\\(\\d-\\d\\))',rd[[1]][8])
+c_scores<-substr(rd[[1]][8],p_scores[1],attr(p_scores,"match.length")+p_scores[1]-1)
+scores<-strsplit(c_scores,'\\",\\"')#比分
+
+p_hometeam<-regexpr('(\\w+\\",)(\\"\\w+\\",)+(\\"\\w+)',rd[[1]][11])
+c_hometeam<-substr(rd[[1]][11],p_hometeam[1],attr(p_hometeam,"match.length")+p_hometeam[1]-1)
+hometeam<-strsplit(c_hometeam,'\\",\\"')#主队
+
+p_awayteam<-regexpr('(\\w+\\",)(\\"\\w+\\",)+(\\"\\w+)',rd[[1]][12])
+c_awayteam<-substr(rd[[1]][12],p_awayteam[1],attr(p_awayteam,"match.length")+p_awayteam[1]-1)
+awayteam<-strsplit(c_awayteam,'\\",\\"')#客队
+
+data<-matrix(c(rounds[[1]],match_time[[1]],hometeam[[1]],scores[[1]],awayteam[[1]]),ncol=5,nrow=380)
+colnames(data)<-c("轮次","比赛时间","主队","赛果","客队")
+
+
+
+
+
+
+
+
+
+
+
+
