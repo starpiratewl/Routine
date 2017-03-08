@@ -277,16 +277,16 @@ colnames(data)<-c("轮次","比赛时间","主队","赛果","客队")
 #################################################################################################
 ## RCurl test
 #################################################################################################
-url1 <- https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=0&rsv_idx=1&tn=baidu&wd=RCurl&rsv_pq=c730308a0001c6ca&rsv_t=275dODpy%2B8LB98q08SZeB9FMEdqjWr5llnOCu%2FoWdG5JRloKBqITv5VVjVU&rqlang=cn&rsv_enter=1&rsv_sug3=5&rsv_sug1=5&rsv_sug7=100&rsv_sug2=0&inputT=3981&rsv_sug4=3983
+url1 <- c("https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=0&rsv_idx=1&tn=baidu&wd=RCurl&rsv_pq=c730308a0001c6ca&rsv_t=275dODpy%2B8LB98q08SZeB9FMEdqjWr5llnOCu%2FoWdG5JRloKBqITv5VVjVU&rqlang=cn&rsv_enter=1&rsv_sug3=5&rsv_sug1=5&rsv_sug7=100&rsv_sug2=0&inputT=3981&rsv_sug4=3983")
 
 
-url2 <- https://www.baidu.com/s?ie=utf-8&f=3&rsv_bp=0&rsv_idx=1&tn=baidu&wd=hah&rsv_pq=a1cb70250001f302&rsv_t=2eccrWFil04EOUZ1lsch86QO%2FzqA%2FHDipH%2FR7WYk%2BXx%2FmTCgBkeIECDW3Os&rqlang=cn&rsv_enter=0&rsv_sug3=4&rsv_sug1=4&rsv_sug7=100&prefixsug=hah&rsp=0&inputT=5494&rsv_sug4=5494
+url2 <- c("https://www.baidu.com/s?ie=utf-8&f=3&rsv_bp=0&rsv_idx=1&tn=baidu&wd=hah&rsv_pq=a1cb70250001f302&rsv_t=2eccrWFil04EOUZ1lsch86QO%2FzqA%2FHDipH%2FR7WYk%2BXx%2FmTCgBkeIECDW3Os&rqlang=cn&rsv_enter=0&rsv_sug3=4&rsv_sug1=4&rsv_sug7=100&prefixsug=hah&rsp=0&inputT=5494&rsv_sug4=5494")
 
 
-url3 <- https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=0&rsv_idx=1&tn=baidu&wd=hao&rsv_pq=f85bcd1d0001b28c&rsv_t=6f1fQ66K1ZYkwglPAnpc2v%2F9T6l4UHodabwmJG1V8XKLCRURKTIL21sycfQ&rqlang=cn&rsv_enter=1&rsv_sug3=4&rsv_sug1=3&rsv_sug7=100&rsv_sug2=0&inputT=1510&rsv_sug4=5976
+url3 <- c("https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=0&rsv_idx=1&tn=baidu&wd=hao&rsv_pq=f85bcd1d0001b28c&rsv_t=6f1fQ66K1ZYkwglPAnpc2v%2F9T6l4UHodabwmJG1V8XKLCRURKTIL21sycfQ&rqlang=cn&rsv_enter=1&rsv_sug3=4&rsv_sug1=3&rsv_sug7=100&rsv_sug2=0&inputT=1510&rsv_sug4=5976")
 
 
-url4 <- https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=cha&oq=hao&rsv_pq=c6053c1f0001bb66&rsv_t=29560JmDmZT7BDO9sMTJAaK%2BOMw5vOBXq2sgMJiDwB271%2FOGy2Q420Sfvlo&rqlang=cn&rsv_enter=1&inputT=497&rsv_sug3=8&rsv_sug1=6&rsv_sug7=100&rsv_sug2=0&rsv_sug4=1400
+url4 <- c("https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=cha&oq=hao&rsv_pq=c6053c1f0001bb66&rsv_t=29560JmDmZT7BDO9sMTJAaK%2BOMw5vOBXq2sgMJiDwB271%2FOGy2Q420Sfvlo&rqlang=cn&rsv_enter=1&inputT=497&rsv_sug3=8&rsv_sug1=6&rsv_sug7=100&rsv_sug2=0&rsv_sug4=1400")
 
 
 
