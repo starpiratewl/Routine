@@ -1,3 +1,39 @@
+## the author of RCurl, also the author of XML and RSPython
+## Duncan Temple Lang
+## http://anson.ucdavis.edu/~duncan/
+
+## RCurl provide the R-interface to libcurl which provide the HTTP facilities, that make R be able to simulate any doing in the explorers
+
+## curl is developed by a team in Sweden, curl has over 80 paramter to set which greatly diversify its ability, curl are more common in linux and unix
+
+## http is a protocol which make two computers communicate via internet
+## now the version of http is HTTP/1.1
+## two major differece between HTTP/1.1 and HTTP/1.0 is that:
+##1, make the connection to keep for a long time, which enable the website to track their client
+##2, add the status code to more than 40, which specify the mistakes may occur which connecting
+
+## the structure of a url
+## schema://host[:port#]/path/.../[?query-string][#anchor]
+## schema: http, https, ftp
+## host: ip address or domain name
+## the port, usually be 80, most of time, it can be ignored, expect we are using proxy server
+## path the file to visit on the server
+## ?query-string, the query string we set to server via url, (don't forget the "?")pay attention here, if we want pass some special symbol via url, it must be written in a "percent coding". For example, "R XML" should be "R%20XML", it is very strange but that is the rule of url. In RCurl, curlPercentEncode() function can be used to inform the details
+## anchor
+
+
+## the structure of request
+
+
+## the structure of resonse
+
+
+
+
+
+
+
+
 library(RCurl)
 
 ## to see if a url really exist
