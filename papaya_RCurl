@@ -23,9 +23,43 @@
 
 
 ## the structure of request
+## request line ## METHOD / path - to - resource / Version - number
+
+## METHOD in the request line:
+##查## GET/HEAD
+##改## POST
+##增## PUT
+##删## DELETE
+
+## request header ##
+## HOST
+## Accept "text/html" "*/*"
+## Accept-encoding "gzip"
+## Accept-language "en","zh"
+## User-agenet "Mozilla"
+## Cookie
+## Referer "跳转"
+## Connection "keep-alive"
+
+## request body ##
+
+
 
 
 ## the structure of resonse
+## status line  ## HTTP/version-number      status code     message
+
+## response header ##
+## Server
+## Date
+## Last-Modified
+## Content-type
+## Connection
+## X-powered-by
+## Connection-length
+## Set-Cookie
+
+## response body ##
 
 
 
