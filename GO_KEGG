@@ -1,0 +1,246 @@
+setwd("D:\\importantbk\\working\\lab_working\\GO\\20150825")
+
+##############################################
+##prepare Abt_VS_Water data
+##############################################
+
+
+Abt_VS_Water <- read.csv(file = "Abt_VS_Water_fc2.txt", header=TRUE, stringsAsFactor = FALSE, sep = "\t")
+
+head(Abt_VS_Water)
+
+Abt_VS_Water_up <- Abt_VS_Water[,c(10,14)]
+
+Abt_VS_Water_downregulation <- Abt_VS_Water_up[Abt_VS_Water_up$foldchange < 1,]
+
+Abt_VS_Water_upregulation <- Abt_VS_Water_up[Abt_VS_Water_up$foldchange > 1,]
+
+Abt_VS_Water_upregulation[,3] <- rep("Abt_VS_Water_up", length(Abt_VS_Water_upregulation[,1]))
+
+names(Abt_VS_Water_upregulation) <- c("foldchange", "GeneSymbol", "Group")
+
+Abt_VS_Water_downregulation[,3] <- rep("Abt_VS_Water_down", length(Abt_VS_Water_downregulation[,1]))
+
+names(Abt_VS_Water_downregulation) <- c("foldchange", "GeneSymbol", "Group")
+
+Abt_VS_Water_upregulation_nona <- Abt_VS_Water_upregulation[!is.na(Abt_VS_Water_upregulation$GeneSymbol),]
+Abt_VS_Water_downregulation_nona <- Abt_VS_Water_downregulation[!is.na(Abt_VS_Water_downregulation$GeneSymbol),]
+
+
+## GET the universe genes(genes set as background). We can't use all the genes in the microarray, because reviewer are doubt about it, the reviewer think it not possible to assume that all the genes will alter in the experiment set, so he suggest some pruning strategy, so the pruning strategy I adopt is to calculate all teh CVs of the genes, and use the CV value of Actb(actin beta)as a baseline, equal or less than the CV value of Actb are all filtered
+## the CV value of Actb is 0.001776247
+
+
+all_tab <- read.csv(file = "Abt_VS_Water_CV.txt", header = T, stringsAsFactor = F, sep = "\t")
+all_tab_no <- all_tab[!is.na(all_tab$GeneSymbol),]
+
+head(all_tab)
+
+## CV of Actb is 0.001776247
+## the most CV of Actb and gapdh is 0.005, so there will be different approach to filter
+all_filter1 <- all_tab_no[all_tab_no$CV > 0.001776247, ]
+all_filter2 <- all_tab_no[all_tab_no$CV > 0.005, ]
+
+## so it seems that the CV value filter so many genes 
+dim(all_tab_no)
+##[1] 31230    26
+dim(all_tab)
+##[1] 37401    26
+dim(all_filter1)
+##[1] 31058    26
+dim(all_filter2)
+##[1] 28682    26
+
+all_genes <- unique(all_filter1$GeneSymbol)
+length(all_genes)
+##[1] 22384
+
+############################
+##UP_GO
+############################
+up_genes <- unique(Abt_VS_Water_upregulation_nona$GeneSymbol)
+length(up_genes)
+##[1] 192
+
+
+library("org.Mm.eg.db")
+library("GSEABase")
+library("GOstats")
+library(Category)
+
+##GO BP enrichment analysis
+##tab_ALL=read.table("Abt_VS_Water_upregulation_nona_fc2.txt",header=T,as.is=T)
+##tab = subset(tab_ALL, ! is.na(tab_ALL$GeneSymbol))
+df=c()
+goAnn <- get("org.Mm.egGO")
+universe <- Lkeys(goAnn)
+##Group = unique(tab$Group)
+Genes = c()
+
+##genes=unique(tab[tab$Group ==i,'GeneSymbol'])
+	entrezIDs <- mget(up_genes, org.Mm.egSYMBOL2EG, ifnotfound=NA)
+  universeIDs <- mget(all_genes, org.Mm.egSYMBOL2EG, ifnotfound=NA)
+	entrezIDs <- as.character(entrezIDs)
+  universeIDs <- as.character(universeIDs)
+	params <- new("GOHyperGParams",
+			 geneIds=entrezIDs,
+			 universeGeneIds=universeIDs,
+			 annotation="org.Mm.eg.db",
+			 ontology="BP",
+			 ##pvalueCutoff=0.01,
+			 conditional=FALSE,
+			 testDirection="over")
+	over <- hyperGTest(params)
+	bp <- summary(over)
+	##bp$Group = rep(i,length(bp$Term))
+	df=rbind(df,bp)
+
+
+
+
+for (i in df$GOBPID){
+	e<-mget(i, org.Mm.egGO2ALLEGS)
+	t<-lapply(e,function(.ele,x){intersect(as.character(x),.ele)}, entrezIDs)
+	names(t) <- NULL
+	Termgenes <- mget(unlist(t), org.Mm.egSYMBOL, ifnotfound=NA)
+	Genes = c(Genes,paste0(unlist(Termgenes), collapse = ";"))
+	#Genes[which(df$GOBPID == i )] = paste0(unlist(Termgenes), collapse = ";")
+	
+}
+
+df=cbind(df,Genes)
+
+
+df$Genes = Genes
+
+df$FDR <- p.adjust(df$Pvalue,method="fdr",length(df$Pvalue))
+
+write.table(df,file="Abt_VS_Water_upregulation_nona_fc2_CV_filterred.tab",quote=F,row.names=F,sep="\t")
+
+
+
+
+
+
+
+
+
+############################
+##DOWN_GO
+############################
+down_genes <- unique(Abt_VS_Water_downregulation_nona$GeneSymbol)
+length(down_genes)
+##[1] 54
+
+
+##GO BP enrichment analysis
+##tab_ALL=read.table("Abt_VS_Water_upregulation_nona_fc2.txt",header=T,as.is=T)
+##tab = subset(tab_ALL, ! is.na(tab_ALL$GeneSymbol))
+df=c()
+goAnn <- get("org.Mm.egGO")
+universe <- Lkeys(goAnn)
+##Group = unique(tab$Group)
+Genes = c()
+
+##genes=unique(tab[tab$Group ==i,'GeneSymbol'])
+	entrezIDs <- mget(down_genes, org.Mm.egSYMBOL2EG, ifnotfound=NA)
+  universeIDs <- mget(all_genes, org.Mm.egSYMBOL2EG, ifnotfound=NA)
+	entrezIDs <- as.character(entrezIDs)
+  universeIDs <- as.character(universeIDs)
+	params <- new("GOHyperGParams",
+			 geneIds=entrezIDs,
+			 universeGeneIds=universeIDs,
+			 annotation="org.Mm.eg.db",
+			 ontology="BP",
+			 ##pvalueCutoff=0.01,
+			 conditional=FALSE,
+			 testDirection="over")
+	over <- hyperGTest(params)
+	bp <- summary(over)
+	##bp$Group = rep(i,length(bp$Term))
+	df=rbind(df,bp)
+
+
+
+
+for (i in df$GOBPID){
+	e<-mget(i, org.Mm.egGO2ALLEGS)
+	t<-lapply(e,function(.ele,x){intersect(as.character(x),.ele)}, entrezIDs)
+	names(t) <- NULL
+	Termgenes <- mget(unlist(t), org.Mm.egSYMBOL, ifnotfound=NA)
+	Genes = c(Genes,paste0(unlist(Termgenes), collapse = ";"))
+	#Genes[which(df$GOBPID == i )] = paste0(unlist(Termgenes), collapse = ";")
+	
+}
+
+df=cbind(df,Genes)
+
+
+df$Genes = Genes
+
+df$FDR <- p.adjust(df$Pvalue,method="fdr",length(df$Pvalue))
+
+write.table(df,file="Abt_VS_Water_downregulation_nona_fc2_CV_filterred.tab",quote=F,row.names=F,sep="\t")
+
+
+
+
+############################
+#KEGG
+############################
+
+
+library("org.Mm.eg.db")
+library("GSEABase")
+library("GOstats")
+library(Category)
+library("KEGG.db")
+
+genes <- c(up_genes, down_genes)
+entrezIDs <- mget(genes, org.Mm.egSYMBOL2EG, ifnotfound=NA)
+entrezIDs <- as.character(entrezIDs)
+
+universeIDs <- mget(all_genes, org.Mm.egSYMBOL2EG, ifnotfound=NA)
+universeIDs <- as.character(universeIDs)
+
+keggAnn <- get("org.Mm.egPATH")
+universe <- Lkeys(keggAnn)
+params <- new("KEGGHyperGParams", 
+		geneIds=entrezIDs, 
+		universeGeneIds=universeIDs, 
+		annotation="org.Mm.eg.db", 
+		categoryName="KEGG", 
+		testDirection="over")
+over <- hyperGTest(params)
+kegg <- summary(over)
+
+
+
+glist <- geneIdsByCategory(over)
+
+glist <- sapply(glist, function(.ids) {
+.sym <- mget(.ids, envir=org.Mm.egSYMBOL, ifnotfound=NA)
+.sym[is.na(.sym)] <- .ids[is.na(.sym)]
+paste(.sym, collapse=";")
+})
+
+kegg$Symbols <- glist[as.character(kegg$KEGGID)]
+
+kegg
+
+kegg$FDR <- p.adjust(kegg$Pvalue,method="fdr",length(kegg$Pvalue))
+
+write.table(kegg,file="Abt_Water_kegg_CV.txt",quote=F,row.names=F,sep="\t")
+
+
+
+
+
+
+
+
+
+
+
+
+
