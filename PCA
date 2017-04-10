@@ -1,0 +1,113 @@
+setwd("D:\\importantbk\\working\\lab_working\\biochip_overall\\work_for_article\\PCAs\\Abt_Water")
+
+
+exp_tab <- read.csv(file = "Abt_Water.txt", sep = "\t", stringsAsFactors = F, header = T)
+
+
+exp_tab_groups <- exp_tab[,c(2,3,6,7)]
+
+sd=scale(exp_tab_groups)
+
+write.table(sd, file = "test_sd.txt", sep = "\t", quote = F, col.names = T, row.names = F)
+
+
+sd_tab <- read.csv(file = "test_sd.txt", sep = "\t", stringsAsFactors =F)
+
+chip.dat.pca<-princomp(exp_tab_groups, cor = F)
+
+
+
+
+
+
+
+
+
+
+dcor <- cor(sd_tab)
+deig=eigen(dcor)
+sum(deig$value[1:2])/4
+
+
+
+
+colour<-c(rep(2,2),rep(3,2))
+
+library(rgl)
+
+tab_loadings = loadings(chip.dat.pca)
+
+Comp.1 = tab_loadings[,1]
+Comp.2 = tab_loadings[,2]
+
+plot(Comp.1,Comp.2 ,col = colour, xlim = c(0.48,0.52), ylim = c(-0.5,1.0))
+plot(Comp.1,Comp.2 ,col = colour)
+
+
+
+
+
+##pr<-princomp(~var1+var2+var3+var4,data=a,cor=TRUE,scores=TRUE) 
+
+pr<-princomp(~Abt_1_NS+Abt_2_NS+Water_1_NS+Water_2_NS,data=exp_tab_groups,cor=F,scores=TRUE) 
+
+
+tab_loadings = loadings(pr)
+
+Comp.1 = tab_loadings[,1]
+Comp.2 = tab_loadings[,2]
+plot(Comp.1,Comp.2 ,col = colour)
+
+
+
+
+
+
+
+
+
+
+
+test_tab <- t(exp_tab_groups)
+
+test_pac <- princomp(test_tab, cor = F)
+
+######################################################
+## youtube test
+######################################################
+
+
+
+power <- c(60,35,74,30,80,90,50)
+space <- c(58,40,68,40,70,95,50)
+design <- c(25,75,50,60,50,80,45)
+
+
+dat <- cbind(power, space, design)
+row.names(dat) <- c("a","b","c","d","e","f","g")
+
+
+pca1 <- princomp(dat, cor = F)
+
+
+tab_loadings = loadings(pca1)
+
+Comp.1 = tab_loadings[,1]
+Comp.2 = tab_loadings[,2]
+
+plot(Comp.1,Comp.2 ,col = colour)
+
+
+
+
+
+
+
+
+######################################################
+## ClustVis test
+######################################################
+
+
+
+Unit variance scaling is applied to rows; SVD with imputation is used to calculate principal components. X and Y axis show principal component 1 and principal component 2 that explain 41.9% and 31.7% of the total variance, respectively. N = 4 data points.
