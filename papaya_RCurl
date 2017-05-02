@@ -6,11 +6,15 @@
 
 ## curl is developed by a team in Sweden, curl has over 80 paramter to set which greatly diversify its ability, curl are more common in linux and unix
 
+
+
 ## http is a protocol which make two computers communicate via internet
 ## now the version of http is HTTP/1.1
 ## two major differece between HTTP/1.1 and HTTP/1.0 is that:
 ##1, make the connection to keep for a long time, which enable the website to track their client
 ##2, add the status code to more than 40, which specify the mistakes may occur which connecting
+
+
 
 ## the structure of a url
 ## schema://host[:port#]/path/.../[?query-string][#anchor]
@@ -22,26 +26,35 @@
 ## anchor
 
 
+
 ## the structure of request
-## request line ## METHOD / path - to - resource / Version - number
+## 111request line ## METHOD / path - to - resource / Version - number
 
 ## METHOD in the request line:
-##查## GET/HEAD
+##查## GET/HEAD 
+## because the information submitted via url, so the information embedded in the http request has length limitation.
+## For example, you can not search for a very long string in google
 ##改## POST
 ##增## PUT
 ##删## DELETE
 
-## request header ##
-## HOST
-## Accept "text/html" "*/*"
-## Accept-encoding "gzip"
+## path - to - resource
+## the path of the requested resources
+
+## Version - number
+## http1.1,  the version number of http
+
+## 222request header ##
+## HOST   the address of the server
+## Accept "text/html" "*/*"   tell the server the kind of media type which could be accepted by the client-side
+## Accept-encoding "gzip"    
 ## Accept-language "en","zh"
 ## User-agenet "Mozilla"
 ## Cookie
 ## Referer "跳转"
 ## Connection "keep-alive"
 
-## request body ##
+## 333request body ##
 
 
 
