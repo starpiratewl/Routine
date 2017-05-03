@@ -46,12 +46,12 @@
 
 ## 222request header ##
 ## HOST   the address of the server
-## Accept "text/html" "*/*"   tell the server the kind of media type which could be accepted by the client-side
-## Accept-encoding "gzip"    
-## Accept-language "en","zh"
-## User-agenet "Mozilla"
-## Cookie
-## Referer "跳转"
+## Accept "text/html" "*/*"   tell the server the kind of media type which could be accepted by the client-side browser
+## Accept-encoding "gzip"    this is not the character encoding, this is the manifestation of client-side browser about the method of encoding it can accept, usually mean the method of compression
+## Accept-language "en","zh"  tell the server the kind of language which could be accepted by the client-side browser
+## User-agenet "Mozilla"   tell the server the kind of operating system and browser on the client-side
+## Cookie    save the user's session in the client-side
+## Referer "跳转"     a url where user come from before entering certain website
 ## Connection "keep-alive"
 
 ## 333request body ##
@@ -60,19 +60,37 @@
 
 
 ## the structure of resonse
-## status line  ## HTTP/version-number      status code     message
 
-## response header ##
-## Server
-## Date
+
+## 111status line  ## HTTP/version-number      status code     message
+
+## Version - number
+## http1.1,  the version number of http
+
+## status code
+## tell the browser the response of the server
+## 5 kinds of status code defined in the http1.1
+## 1XX  means the request has been accepted by the server and the processing is continuing
+## 2XX  means the request of the browser has been accepted by the server and the resources requested will be returned
+## 3XX  means redirection, 
+## 4XX  means the errors occurred at the client-side
+## 5XX  means the errors occureed at the server-side, for example, 503 server is not available.
+
+## message
+
+
+## 222response header ##
+## Server    the software information on the server
+## Date     
 ## Last-Modified
 ## Content-type
 ## Connection
-## X-powered-by
+## X-powered-by    tell the brower the website of the server is developped by what software(PHP, ASP.net), usually is not showed, because it is not safe for website to tell their client the detailed informtation of software they use
 ## Connection-length
-## Set-Cookie
+## Set-Cookie    set the cookie to the browser at the client-side
 
-## response body ##
+
+## 333response body ##
 
 
 
@@ -85,6 +103,8 @@ library(RCurl)
 
 ## to see if a url really exist
 url.exists(url="www.baidu.com")
+##[1] TRUE
+
 
 d <- debugGatherer() #收集调试信息
 # verbose = TRUE 这时候，d$value()值是会叠加的
@@ -94,8 +114,36 @@ names(d$value())
 # [1] "text"       "headerIn"   "headerOut"  "dataIn"     "dataOut"    "sslDataIn"  "sslDataOut"
 
 cat(d$value()[1]) #服务器地址及端口号
+##Rebuilt URL to: www.baidu.com/
+##  Trying 115.239.210.27...
+##Connected to www.baidu.com (115.239.210.27) port 80 (#0)
+##Connection #0 to host www.baidu.com left intact
+
 cat(d$value()[2]) #服务器返回的头信息
+##HTTP/1.1 200 OK
+##Date: Tue, 02 May 2017 07:56:30 GMT
+##Content-Type: text/html
+##Content-Length: 14613
+##Last-Modified: Thu, 27 Apr 2017 06:03:00 GMT
+##Connection: Keep-Alive
+##Vary: Accept-Encoding
+##Set-Cookie: BAIDUID=6EED39F6FE38E8DE04DB7B3F35F40073:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+##Set-Cookie: BIDUPSID=6EED39F6FE38E8DE04DB7B3F35F40073; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+##Set-Cookie: PSTM=1493711790; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com
+##P3P: CP=" OTI DSP COR IVA OUR IND COM "
+##Server: BWS/1.1
+##X-UA-Compatible: IE=Edge,chrome=1
+##Pragma: no-cache
+##Cache-control: no-cache
+##Accept-Ranges: bytes
+
 cat(d$value()[3]) #提交给服务器的头信息
+##GET / HTTP/1.1
+##Host: www.baidu.com
+##Accept: */*
+
+
+
 d$reset() # 清除d$value()
 d$value() # 清除之后全部为空
 ##      text   headerIn  headerOut     dataIn    dataOut  sslDataIn sslDataOut 
