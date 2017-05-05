@@ -107,8 +107,11 @@ url.exists(url="www.baidu.com")
 
 
 d <- debugGatherer() #收集调试信息
-# verbose = TRUE 这时候，d$value()值是会叠加的
-tmp <- getURL(url="www.baidu.com", debugfunction = d$update, verbose = TRUE)  
+## verbose = TRUE 这时候，d$value()值是会叠加的
+## it means that if verbose = T, every time we run the tmp <- .... the information will be appended in the value, and makes it seems like a log
+## if the verbose = F, the information of executing tmp <-... will not be stored in the value
+
+tmp <- getURL(url="www.baidu.com", debugfunction = d$update, verbose = TRUE)
 
 names(d$value())
 # [1] "text"       "headerIn"   "headerOut"  "dataIn"     "dataOut"    "sslDataIn"  "sslDataOut"
@@ -150,6 +153,50 @@ d$value() # 清除之后全部为空
 ##        ""         ""         ""         ""         ""         ""         "" 
 
 
+## notice here , why we can use the d$reset() function here
+
+d
+
+##$update
+##function (msg, type, curl) 
+##{
+##    els[[type + 1]] <<- c(els[[type + 1]], msg)
+##    info[[length(info) + 1]] <<- msg
+##    names(info)[length(info)] <<- names(type)
+##    0
+##}
+##<environment: 0x0000000011105f10>
+##
+##$value
+##function (collapse = "", ordered = FALSE, ...) 
+##{
+##    if (ordered) 
+##        return(info)
+##    if (is.null(collapse)) 
+##        return(els)
+##    sapply(els, function(x) paste(x, collapse = collapse, ...))
+##}
+##<environment: 0x0000000011105f10>
+##
+##$reset
+##function () 
+##{
+##    els <<- list(text = character(), headerIn = character(), 
+##        headerOut = character(), dataIn = character(), dataOut = character(), 
+##        sslDataIn = character(), sslDataOut = character())
+##    info <<- list()
+##}
+##<environment: 0x0000000011105f10>
+##
+##attr(,"class")
+##[1] "RCurlDebugHandler"     "RCurlCallbackFunction"
+
+## The result of d here shows that there are three functions in d, d$update, d$value, d$reset, these three functions has been defined in the d 
+## so it means that we can use d$update in R
+
+
+
+
 
 # 查看服务器返回的头信息
 ## 列表形式
@@ -159,7 +206,7 @@ names(h$value())
 ##[1] "Date"            "Content-Type"    "Content-Length"  "Last-Modified"   "Connection"      "Vary"            "Set-Cookie"      "Set-Cookie"      "Set-Cookie"      "P3P"             "Server"         
 ##[12] "X-UA-Compatible" "Pragma"          "Cache-control"   "Accept-Ranges"   "status"          "statusMessage"  
 h$value()
-
+## The result is too long and not very well formatted, so I choose not the show it here.
 
 # 查看服务器返回的头信息
 ## 字符串形式
@@ -206,7 +253,17 @@ cat(h$value()) # 用cat显示的，会比较好看
 
 
 # 查看url请求的访问信息，查看句柄
+## What is handle?
+## 
 curl <- getCurlHandle()
+
+curl
+##An object of class "CURLHandle"
+##Slot "ref":
+##<pointer: 0x000000001032cbf0>
+
+##so it shows that curl is an object
+
 
 txt <- getURL(url="http://www.baidu.com", curl = curl)
 names(getCurlInfo(curl))
@@ -220,6 +277,11 @@ names(getCurlInfo(curl))
 
 getCurlInfo(curl)$response.code
 # [1] 200
+
+getCurlInfo(curl)$total.time
+# [1] 0.062
+
+
 
 getCurlInfo(curl=curl)
 ##$effective.url
@@ -260,6 +322,10 @@ cat(d$value()[3]) # 提交给服务器的头信息，发现设置成功
 ##Accept-Charset: GB2312,utf-8;q=0.7,*;q=0.7
 
 
+listCurlOptions()
+## it list all the parameters which could be set in the RCurl, total number is 172
+
+
 
 
 
@@ -277,6 +343,9 @@ names(getFormParams(query=url))
 ##[10] "rsv_pq"    "rsv_t"     "rsv_enter" "inputT"   
 
 tmp <- getForm(uri="http://www.baidu.com/s", ie="utf-8", f="8", rsv_bp="1", rsv_idx="2", ch="", tn="SE_hldp02870_0v135xhf", bar="", wd="rcurl", rsv_spt="1", rsv_pq="a3ed162a0088df8f", rsv_t="43d18gWNyd6HWpqDiKov7Dm548s4HY4cgcJlXc8ujpzRW9Okec2aOb5screzftZo5DJ60Cp7aILvRK2Q", rsv_enter="1", inputT="2119")
+write.table(tmp, file = "test.html")
+## to see what we have scraped from the baidu
+
 
 # 这里的getForm函数不稳定(原因还不知道)，有时候运行2到3次，才能真正找到页面
 # 出来的错误的结果，爬取的页面为：
@@ -289,6 +358,18 @@ attr(,"Content-Type")
 
 ##postForm()
 ##以保密的形式上传我们所要页面提交的信息，然后获取服务器端返回该页面信息。例如登陆一个页面，需要账户和密码，那么我们需要提交账户和密码，提交的信息要加密，然后抓取登陆后的页面信息。
+
+
+
+
+
+
+
+
+
+https://login.sina.com.cn/signup/signin.php?entry=weibo&r=http%3A%2F%2Fweibo.com%3Fsudaref%3Dsecurity.weibo.com
+
+
 
 # getBinaryURL() 下载一个文件
 url <- "http://rfunction.com/code/1201/120103.R"
