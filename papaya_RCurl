@@ -358,16 +358,45 @@ attr(,"Content-Type")
 
 ##postForm()
 ##以保密的形式上传我们所要页面提交的信息，然后获取服务器端返回该页面信息。例如登陆一个页面，需要账户和密码，那么我们需要提交账户和密码，提交的信息要加密，然后抓取登陆后的页面信息。
-
-
-
-
-
-
-
+##base64()  this function turn the character submitted to the form which can be recognized by the http post function
+## base64Decode() this function turn the character recognized by the http post to the character we can read
 
 
 https://login.sina.com.cn/signup/signin.php?entry=weibo&r=http%3A%2F%2Fweibo.com%3Fsudaref%3Dsecurity.weibo.com
+
+## now most website need a CAPTCHA(captcha) when landing, it places extra difficulty when use scripts like R
+## I haven't got better idea about dealing with this
+
+
+
+
+
+
+## getURL, dirlistonly parameter
+## we have read all the items in this page, though the format is not very well
+url <- "http://rfunction.com/code/1202/"
+filename <- getURL(url, dirlistonly = T)
+
+## getURL, followlocation parameter
+curl <- getCurlHandle()
+destination <- getURL("http://www.sina.com",curl = curl)
+getCurlInfo(curl)$response.code
+##[1] 301
+## here we set a wrong website, and did not add the followlocation parameter, so the result is 301, which mean the website we request is not available. If we make some change with the followlocation parameter, the result will completely different.
+
+culr <- getCurlHandle()
+destination <- getURL("http://www.sina.com", curl = curl, followlocation = T)
+getCurlInfo(curl)$response.code
+##[1] 200
+
+## here we can achieve the website now!
+## because we allow the redirections here, so there is a subsequent question about the parameter maxredirs, which set the most times of redirection allowed(we can not allowed too much redirection because some website may direct us to unkonwn website), usually this parameter is set to 3 or 5.
+
+
+
+
+
+
 
 
 
@@ -399,6 +428,13 @@ for(i in 1:length(files)){
 
   Sys.sleep(2) # 休眠2秒
 }
+
+
+
+
+
+
+
 
 
 
