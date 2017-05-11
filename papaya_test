@@ -83,10 +83,6 @@ txt <- getURL("http://cos.name/cn/", curl = curl, httpheader = myheader, verbose
 write.table(txt, file = "getcurl.html")
 
 
-tmp <- getURL("www.baidu.com", debugfunction = d$update, httpheader = myheader, verbose = T)
-write.table(tmp, file = "gatherer.html")
-
-
 
 
 ####################################################################
