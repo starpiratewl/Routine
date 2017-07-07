@@ -1,0 +1,63 @@
+##using statistical methods to fill-in missing values, tend to be complex. However, if done properly, they can improve our analysis. For an overview of statistical methods for analyzing data with missing values, refer to following
+##Little, R.J.A., Rubin, D.B.: Statistical Analysis with Missing Data, 2nd edn. Wiley-Interscience, New York (2002)
+
+## remove NA
+
+data(Pima.tr2)
+is.na(Pima.tr2$bp)
+
+which(is.na(Pima.tr2$bp))
+
+complete.cases(Pima.tr2)
+
+Pima.complete <- na.omit(Pima.tr2)
+
+
+
+
+library(MASS)
+data(Pima.tr2)
+## edit the data table in a excel-like style
+fix(Pima.tr2)
+
+
+median(Pima.tr$bmi)
+
+quantile(Pima.tr$bmi, probs = c(0.1, 0.25, 0.5, 0.75, 0.9))
+
+IQR(Pima.tr$bmi)
+
+
+
+## creating new category variables based on other variables
+
+Pima.tr$weight.status <- rep(NA, 200)
+
+for (i in 1:200) {
+  if (Pima.tr$bmi[i] < 18.5) {
+    Pima.tr$weight.status[i] <- "Underweight"
+    }
+  else if (Pima.tr$bmi[i] >= 18.5 & Pima.tr$bmi[i] < 24.9) {
+    Pima.tr$weight.status[i] <- "Normal"
+    }
+  else if (Pima.tr$bmi[i] >= 24.9 & Pima.tr$bmi[i] < 29.9) {
+    Pima.tr$weight.status[i] <- "Overweight"
+    }
+  else {
+    Pima.tr$weight.status[i] <- "Obese"
+    }
+}
+
+head(Pima.tr)
+
+Pima.tr$weight.status <- factor(Pima.tr$weight.status)
+levels(Pima.tr$weight.status)
+
+
+Pima.tr$weight.status <- factor(Pima.tr$weight.status, levels = c("Underweight", "Normal", "Overweight", "Obese"))
+levels(Pima.tr$weight.status)
+
+
+
+
+
