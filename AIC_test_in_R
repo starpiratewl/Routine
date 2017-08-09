@@ -146,13 +146,71 @@ summary(tlm)
 
 
 
+######################################################################################
+## test of wangyang data
+######################################################################################
+
+setwd("C:\\Users\\WL\\Desktop\\wangliang\\medicine")
+
+library(Hmisc)
+data <- spss.get("primary cohort mast_1_o.sav")  
+## these method is not perfect
+## we translate sav files into txt or csv using SPSS, then try to import it in R
+
+data <- read.csv(file = "primary cohort mast_1_o.dat", sep = "\t", header = T, stringsAsFactor = F)
+
+library(survival)
+
+y <- Surv(data$Time, data$DSS == 1)
+
+mod1 <- coxph(y ~ Nstage, data = data)
+mod2 <- coxph(y ~ mLNRstage, data = data)
+mod3 <- coxph(y ~ AJCCstage, data = data)
+mod4 <- coxph(y ~ TNR分组, data = data)
+
+
+colnames_test <- colnames(data)
+colnames_test[12] <- "Tstage_group"
 
 
 
+## find the abnormal observations
+## dim(data[data$PLN == 0 & data$Nstage != 0 ,])
 
-##############################################################
+## 
+
+
+
+data_filter <- data[,c(6,9,11,12,13,18,20,25,26,27)]
+data_na <- na.omit(data_filter)
+
+y <- Surv(data_na$Time, data_na$DSS == 1)
+
+
+##mod5 <- coxph(y ~ Age + race3 + marital + location + histologic + Grade + Tstage_group + mLNRstage + Nstage + NER + NPR, data = data)
+
+
+mod5 <- coxph(y ~ marital + Grade + Tstage_group + mLNRstage + Nstage + NER , data = data_na)
+
+mod6 <- lm(y ~ mLNRstage, data = data_na)
+mod7 <- lm(y ~ Nstage, data = data_na)
+
+##mod5 <- coxph(y ~ mLNRstage + Nstage , data = data)
+
+
+mod_mLNR <- coxph(y ~ mLNRstage , data = data_na)
+mod_Nstage <- coxph(y ~ Nstage , data = data_na)
+
+tstep<-step(mod5)
+
+
+drop1(tstep)
+
+
+
+######################################################################################
 ## test of residuals
-##############################################################
+######################################################################################
 
 ## actually the residuals fitted a normal distribution N(0, σ)   σ is the standard deviation of residuals
 ## we can use the shapiro.test to test the fitness to normal distribution
