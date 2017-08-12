@@ -1,0 +1,66 @@
+###################################################################################
+##binominal distribution
+
+rbinom(10, size = 10, prob = 0.2)
+## [1] 2 3 2 1 3 2 3 0 3 1
+
+rbinom(5, size = 10, prob = 0.2)
+##[1] 1 2 2 4 1
+
+## if we choose size = 1 in the rbinom function, it will be simulating random samples from the correspoding Bernoulli distribution
+rbinom(10, size = 1, prob = 0.2)
+## [1] 0 0 0 1 0 0 0 0 1 1
+
+## This dbinom function is calculating the P(X = 3), this is the pmf ( probability mass function)
+dbinom(3, size = 10, prob = 0.2)
+##[1] 0.2013266
+
+x <- 0:10
+Px <- dbinom(x, size = 10, prob = 0.2)
+round(Px, 2)
+##[1] 0.11 0.27 0.30 0.20 0.09 0.03 0.01 0.00 0.00 0.00 0.00
+
+plot(x, Px, type = "h", xlab = "Number of Successes", ylab = "Probability Mass", main = "Binominal(10,0.2)")
+points(x, Px, pch = 16)
+abline(h = 0, col = "gray")
+
+
+## This function is calculatting the P(x <= 3) = P(x = 0) + P(x = 1) + P(x = 2) + P(x = 3)
+## lower.tail = T means we are calculating the lower tail probability
+## if lower.tail = F , it means we are calculating the upper tail probability
+pbinom(3, size = 10, prob = 0.2, lower.tail = T)
+##[1] 0.8791261
+
+## This function is the inverse function of pbinom()
+qbinom(0.8791261, size = 10, prob = 0.2, lower.tail = T)
+## [1] 3
+
+
+###################################################################################
+##poisson distribution
+
+## suppose that on average 4 people visit the hospital each hour, then we can represent the hourly number of hospital visitation as X ~ Poisson(4) and simulate 12 samples from this distribution:
+
+rpois(12,4)
+##[1] 4 4 2 3 4 5 3 1 3 3 4 3
+
+## suppose that we want to know the probability that six people visit the hospital in an hour, then we use the pmf function
+dpois(6,4)
+##[1] 0.1041956
+
+ppois(6,4)
+##[1] 0.889326
+
+qpois(0.889326, 4)
+##[1] 6
+
+
+## let's see the plot of poisson distribution
+x <- 0:10
+Px <- dpois(x, 4)
+plot(x, Px, type = "h", xlab = "Number of random variable", ylab = "Probability Mass", main = "X ~ Poisson(4)")
+points(x, Px, pch = 17)
+abline(h = 0, col = "green")
+
+
+
