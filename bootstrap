@@ -1,2 +1,88 @@
 ## This is the test of bootstrap using wangyang dataset
 
+setwd("C:\\Users\\WL\\Desktop\\wangliang\\medicine")
+
+wy_data <- read.csv(file = "primary cohort mast_1_o.dat", sep = "\t", header = T, stringsAsFactor = F)
+
+
+
+## group mod_mLNR 
+
+library(boot)
+library(survival)
+
+d_data <- wy_data[,c(6,9,11,12,13,18,20,25,26,27)]
+
+rsq <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ mLNRstage, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results <- boot(data = d_data, statistic = rsq, R = 1000)
+
+pdf("mLNR.pdf")
+plot(results, index=2)
+dev.off()
+
+
+## group mod_Nstage
+
+rsq1 <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ Nstage, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results1 <- boot(data = d_data, statistic = rsq1, R = 1000)
+
+pdf("Nstage.pdf")
+plot(results1, index=2)
+dev.off()
+
+t.test(results$t[,2],results1$t[,2])
+
+
+
+
+
+
+
+
+
+
+
+## group mod_Nstage
+
+rsq1 <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ Nstage, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results <- boot(data = d_data, statistic = rsq1, R = 1000)
+
+
+
+
+
+
+
+
+
+
