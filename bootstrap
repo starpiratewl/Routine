@@ -62,13 +62,99 @@ t.test(results$t[,2],results1$t[,2])
 
 
 
+###############
+## group AJCC
+
+
+rsq_AJCC <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ AJCCstage, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results_AJCC <- boot(data = d_data, statistic = rsq_AJCC, R = 1000)
+
+
+pdf("AJCC.pdf")
+plot(results_AJCC, index = 2)
+dev.off()
+
+
+
+
+###############
+## group TNR
+
+
+rsq_TNR <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ TNR分组, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results_TNR <- boot(data = d_data, statistic = rsq_TNR, R = 1000)
+
+
+pdf("TNR.pdf")
+plot(results_TNR, index = 2)
+dev.off()
+
+
+t.test(results_AJCC$t[,2], results_TNR$t[,2])
+
+
+######################################################################################################
+##  DSS10 == 1
+
+
+
+setwd("C:\\Users\\WL\\Desktop\\wangliang\\medicine")
+
+wy_data <- read.csv(file = "primary cohort mast_1_o.dat", sep = "\t", header = T, stringsAsFactor = F)
+
+
+
+## group mod_mLNR 
+
+library(boot)
+library(survival)
+
+d_data <- wy_data[,c(6,9,11,12,13,18,20,25,26,27,33)]
+
+rsq <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS10 == 1)
+  fit <- coxph(y ~ mLNRstage, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results <- boot(data = d_data, statistic = rsq, R = 1000)
+
+pdf("mLNR_DSS10.pdf")
+plot(results, index=2)
+dev.off()
+
 
 ## group mod_Nstage
 
 rsq1 <- function(data, indices) {
   d <- data[indices, ]
   data_na <- na.omit(d)
-  y <- Surv(data_na$Time, data_na$DSS == 1)
+  y <- Surv(data_na$Time, data_na$DSS10 == 1)
   fit <- coxph(y ~ Nstage, data = data_na)
   return(extractAIC(fit))
 }
@@ -76,7 +162,13 @@ rsq1 <- function(data, indices) {
 
 set.seed(1234)
 
-results <- boot(data = d_data, statistic = rsq1, R = 1000)
+results1 <- boot(data = d_data, statistic = rsq1, R = 1000)
+
+pdf("Nstage_DSS10.pdf")
+plot(results1, index=2)
+dev.off()
+
+t.test(results$t[,2],results1$t[,2])
 
 
 
@@ -84,6 +176,57 @@ results <- boot(data = d_data, statistic = rsq1, R = 1000)
 
 
 
+
+
+###############
+## group AJCC
+
+
+rsq_AJCC <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS10 == 1)
+  fit <- coxph(y ~ AJCCstage, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results_AJCC <- boot(data = d_data, statistic = rsq_AJCC, R = 1000)
+
+
+pdf("AJCC_DSS10.pdf")
+plot(results_AJCC, index = 2)
+dev.off()
+
+
+
+
+###############
+## group TNR
+
+
+rsq_TNR <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS10 == 1)
+  fit <- coxph(y ~ TNR分组, data = data_na)
+  return(extractAIC(fit))
+}
+
+
+set.seed(1234)
+
+results_TNR <- boot(data = d_data, statistic = rsq_TNR, R = 1000)
+
+
+pdf("TNR_DSS10.pdf")
+plot(results_TNR, index = 2)
+dev.off()
+
+
+t.test(results_AJCC$t[,2], results_TNR$t[,2])
 
 
 
