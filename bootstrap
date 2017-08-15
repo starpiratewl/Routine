@@ -5,6 +5,10 @@ setwd("C:\\Users\\WL\\Desktop\\wangliang\\medicine")
 wy_data <- read.csv(file = "primary cohort mast_1_o.dat", sep = "\t", header = T, stringsAsFactor = F)
 
 
+#################################################################################################################
+## calculation of AIC
+#################################################################################################################
+
 
 ## group mod_mLNR 
 
@@ -227,6 +231,185 @@ dev.off()
 
 
 t.test(results_AJCC$t[,2], results_TNR$t[,2])
+
+
+
+
+#################################################################################################################
+## calculation of C-index
+#################################################################################################################
+
+
+
+setwd("C:\\Users\\WL\\Desktop\\wangliang\\medicine")
+
+wy_data <- read.csv(file = "primary cohort mast_1_o.dat", sep = "\t", header = T, stringsAsFactor = F)
+
+
+## group mod_mLNR 
+
+library(boot)
+library(survival)
+library(Hmisc)
+
+
+
+d_data <- wy_data[,c(6,9,11,12,13,18,20,25,26,27)]
+
+
+#######################################################################
+
+
+rsq <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ mLNRstage, data = data_na)
+  fp <- predict(fit)
+  cindex.orig <- 1-rcorr.cens(fp,y)
+  return(cindex.orig[1])
+}
+
+
+set.seed(1234)
+
+results <- boot(data = d_data, statistic = rsq, R = 1000)
+
+pdf("mLNR_Cindex.pdf")
+plot(results, index=1)
+dev.off()
+
+
+#######################################################################
+
+
+
+
+rsq1 <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ Nstage, data = data_na)
+  fp <- predict(fit)
+  cindex.orig <- 1-rcorr.cens(fp,y)
+  return(cindex.orig[1])
+}
+
+
+set.seed(1234)
+
+results1 <- boot(data = d_data, statistic = rsq1, R = 1000)
+
+pdf("Nstage_Cindex.pdf")
+plot(results1, index=1)
+dev.off()
+
+
+t.test(results$t, results1$t)
+
+
+
+
+
+#########################################################################
+
+
+rsq_AJCC <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ AJCCstage, data = data_na)
+  fp <- predict(fit)
+  cindex.orig <- 1-rcorr.cens(fp,y)
+  return(cindex.orig[1])
+}
+
+
+set.seed(1234)
+
+results_AJCC <- boot(data = d_data, statistic = rsq_AJCC, R = 1000)
+
+pdf("AJCC_Cindex.pdf")
+plot(results_AJCC, index=1)
+dev.off()
+
+
+#######################################################################
+
+
+
+
+rsq1_TNR <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d)
+  y <- Surv(data_na$Time, data_na$DSS == 1)
+  fit <- coxph(y ~ TNR分组, data = data_na)
+  fp <- predict(fit)
+  cindex.orig <- 1-rcorr.cens(fp,y)
+  return(cindex.orig[1])
+}
+
+
+set.seed(1234)
+
+results_TNR <- boot(data = d_data, statistic = rsq1_TNR, R = 1000)
+
+pdf("TNR_Cindex.pdf")
+plot(results_TNR, index=1)
+dev.off()
+
+
+t.test(results_AJCC$t, results_TNR$t)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################
+##test
+
+
+y <- Surv(data_na$Time, data_na$DSS == 1)
+fit <- coxph(y ~ AJCCstage, data = data_na)
+fp <- predict(fit)###模型的预测值
+cindex.orig=1-rcorr.cens(fp,y) 
+cindex.orig[1]
+
+
+  
+
+
+y <- Surv(data_na$Time, data_na$DSS == 1)
+fit1 <- coxph(y ~ TNR分组, data = data_na)
+fp1 <- predict(fit1)###模型的预测值
+cindex.orig1=1-rcorr.cens(fp1,y) 
+cindex.orig1[1]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
