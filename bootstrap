@@ -370,13 +370,98 @@ t.test(results_AJCC$t, results_TNR$t)
 
 
 
+#################################################################################################################
+## calculation of AUC
+#################################################################################################################
+
+
+
+setwd("C:\\Users\\WL\\Desktop\\wangliang\\medicine")
+
+wy_data <- read.csv(file = "primary cohort mast_1_o.dat", sep = "\t", header = T, stringsAsFactor = F)
+
+d_data <- wy_data[,c(6,9,11,12,13,18,20,25,26,27)]
+
+
+## group mod_mLNR 
+
+library(boot)
+library(survival)
+library(pROC)
+
+
+
+#######################################################################
+
+
+rsq <- function(data, indices) {
+  d <- data[indices, ]
+  data_na <- na.omit(d_data[d_data$DSS == 1, ])
+  ##y <- Surv(data_na$Time)
+  fit <- coxph(Surv(data_na$Time) ~ mLNRstage, data = data_na)
+  fp <- predict(fit,type=c("survival"))
+  data_na$pred <- fp
+  g <- roc(fp ~ mLNRstage, data = data_na)  
+  return(cindex.orig[1])
+}
+
+
+set.seed(1234)
+
+results <- boot(data = d_data, statistic = rsq, R = 1000)
+
+pdf("mLNR_Cindex.pdf")
+plot(results, index=1)
+dev.off()
+
+
+
+
+
+
+
+
+mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")  
+mylogit <- glm(admit ~ gre, data = mydata, family = "binomial")  
+summary(mylogit)  
+prob=predict(mylogit,type=c("response"))  
+mydata$prob=prob  
+library(pROC)  
+g <- roc(admit ~ prob, data = mydata)  
+plot(g)  
+
+
+
+
+#################################################
+##test AUC
+
+
+set.seed(666)
+age <- rnorm(400, 50, 10)
+bp  <- rnorm(400,120, 15)
+d.time <- rexp(400)
+cens   <- runif(400,.5,2)
+death  <- d.time <= cens
+d.time <- pmin(d.time, cens)
+
+
+
+fit <- coxph(Surv(d.time,death) ~ age + bp)
+summary(fit) 
+# Concordance = 0.502  (se = 0.019 ) 
+
+
+AUC2 <- survivalROC(Stime=d.time, status=death, marker = eta, predict.time =  265, method="KM")       
+                    
+AUC2$AUC
 
 
 
 
 
 #################################################
-##test
+##test C-index
 
 
 y <- Surv(data_na$Time, data_na$DSS == 1)
