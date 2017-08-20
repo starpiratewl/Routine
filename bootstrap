@@ -3,6 +3,7 @@
 setwd("C:\\Users\\WL\\Desktop\\wangliang\\medicine")
 
 wy_data <- read.csv(file = "primary cohort mast_1_o.dat", sep = "\t", header = T, stringsAsFactor = F)
+##wy_data <- read.csv(file = "123.dat", sep = "\t", header = T, stringsAsFactor = F)
 
 
 #################################################################################################################
@@ -16,6 +17,8 @@ library(boot)
 library(survival)
 
 d_data <- wy_data[,c(6,9,11,12,13,18,20,25,26,27)]
+## d_data <- wy_data[,c(9,10,11,15,18,19,20)]
+
 
 rsq <- function(data, indices) {
   d <- data[indices, ]
