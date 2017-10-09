@@ -1,4 +1,8 @@
 ###################################################################################
+## These codes are from book Biostatistics with R ---An Introduction to Statistics Through Biological Data
+## Babak Shahbaba
+
+###################################################################################
 ##binominal distribution
 
 rbinom(10, size = 10, prob = 0.2)
