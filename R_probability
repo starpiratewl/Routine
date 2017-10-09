@@ -81,10 +81,24 @@ abline(h = 0, col = "green")
 rnorm(5, mean = 25, sd = 4)
 ##[1] 26.81041 22.48187 28.56191 24.11739 18.72288
 
+## plot a normal distribution
+x <- seq(from = 10, to = 40, length = 100)
+fx <- dnorm(x, mean = 25, sd = 4)
+plot(x, fx, type = "l", xlab = "BMI", ylab = "Density", main = "N(25,16)")
+abline(h=0, col = "gray")
 
+## qxxx() function and pxxx() function are reciprocal functions
+pnorm(18.5, mean = 25, sd = 4, lower.tail = T)
+#[1] 0.05208128
 
+qnorm(0.05208128, mean = 25, sd = 4, lower.tail = T)
+#[1] 18.5
 
-
+## plot the cdf with the help of pnorm function
+x <- seq(from = 10, to = 40, length = 100)
+Fx <- pnorm(x, mean = 25, sd = 4)
+plot(x, Fx,type = "l", xlab = "BMI", ylab = "Cumulative Probability", main = "N(25,16)")
+abline(h=0, col= "gray")
 
 
 
