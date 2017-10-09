@@ -30,6 +30,11 @@ abline(h = 0, col = "gray")
 
 
 ## This function is calculatting the P(x <= 3) = P(x = 0) + P(x = 1) + P(x = 2) + P(x = 3)
+## test_seq <- c(0,1,2,3)
+## sum(dbinom(test_seq, size = 10, prob = 0.2))
+## [1] 0.8791261
+## This result is equal to pbinom(3, size = 10, prob = 0.2, lower.tail = T)
+##
 ## lower.tail = T means we are calculating the lower tail probability
 ## if lower.tail = F , it means we are calculating the upper tail probability
 pbinom(3, size = 10, prob = 0.2, lower.tail = T)
