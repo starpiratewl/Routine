@@ -106,7 +106,19 @@ abline(h=0, col= "gray")
 ###################################################################################
 ## hypergeometry distribution
 
+# x: the white balls(the interest event)
+# m: the overall white balls in the population
+# n: the overall black balls in the population
+# k: the size of sample
 
+#population size = m + n
+
+x = 4
+m = 10
+n = 190
+k = 50
+dhyper(x, m, n, k)
+#[1] 0.1466571
 
 
 
