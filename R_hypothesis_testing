@@ -1,0 +1,87 @@
+## z test when z score = -1, z scores = (sample_mean - population_mean)/standard error
+pnorm(-1, mean = 0, sd = 1)
+## 0.1586553
+
+## one side hypothesis testing, the result is the same as the result on page 183
+pnorm(31, mean = 30, sd = 0.6, lower.tail = F)
+##[1] 0.04779035
+
+## two sided hypothesis testing, the result is the same as the result on page 184
+pnorm(98.4, mean = 98.6, sd = 0.2)
+pvalue <- 2 * pnorm(98.4, mean = 98.6, sd = 0.2)
+pvalue
+##[1] 0.3173105
+
+## the above testing is assume the population variance is known, but it is rarely the case when we practice.
+## alomost in all the cases, we have t estiamte the population variance using the sample variance
+## when we use the sample variance, we calculate the t-scores and use the t-distribution\
+## t_score = (sample_mean - population_mean)/sample_sd/sqrt(sample_size)
+## when we have the t_score, we can use pt() fucntion in R to calculate the probability
+## This is the single sample t-test, the following result is the same as the result on page 189
+pt(5.33, df = 199, lower.tail = F)
+##[1] 1.324778e-07
+
+## when we don't know the t-score in advance, we can calculate
+library(MASS)
+t.test(Pima.tr$bmi, mu = 30, alternative = "two.sided")
+##        One Sample t-test
+##
+##data:  Pima.tr$bmi
+##t = 5.3291, df = 199, p-value = 2.661e-07
+##alternative hypothesis: true mean is not equal to 30
+##95 percent confidence interval:
+## 31.45521 33.16479
+##sample estimates:
+##mean of x 
+##    32.31 
+
+## if we need one side t-test, we should set the alternative parameter to "greater" or "less"
+## the following we set "greater" because the sample mean is greater than mu
+library(MASS)
+t.test(Pima.tr$bmi, mu = 30, alternative = "greater")
+##        One Sample t-test
+##
+##data:  Pima.tr$bmi
+##t = 5.3291, df = 199, p-value = 1.331e-07
+##alternative hypothesis: true mean is greater than 30
+##95 percent confidence interval:
+## 31.59367      Inf
+##sample estimates:
+##mean of x 
+##    32.31 
+
+## we can set the confidential level by the conf.level parameters
+## notice that if we don't set the alternative parameter, its default value is "two.sided"
+library(MASS)
+t.test(Pima.tr$bmi, mu = 30, conf.level = 0.9)
+##        One Sample t-test
+##
+##data:  Pima.tr$bmi
+##t = 5.3291, df = 199, p-value = 2.661e-07
+##alternative hypothesis: true mean is not equal to 30
+##90 percent confidence interval:
+## 31.59367 33.02633
+##sample estimates:
+##mean of x 
+##    32.31
+
+## test of the normality
+## the H0 is assume the data is normally distributed
+library(MASS)
+shapiro.test(Pima.tr$bmi)
+##        Shapiro-Wilk normality test
+##
+##data:  Pima.tr$bmi
+##W = 0.99104, p-value = 0.2523
+## the pvalue is large, so we can not reject the H0 hypothesis, the data is normally distributed, the following histogram validate
+## the normal distribution too.
+
+hist(Pima.tr$bmi, freq = FALSE, xlab = "BMI", ylab = "Density", col = "red", main = "Density histogram of BMI")
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
