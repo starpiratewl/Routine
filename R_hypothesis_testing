@@ -1,3 +1,7 @@
+#############################################################################################################################
+## single sample t-test
+#############################################################################################################################
+
 ## z test when z score = -1, z scores = (sample_mean - population_mean)/standard error
 pnorm(-1, mean = 0, sd = 1)
 ## 0.1586553
@@ -79,9 +83,48 @@ shapiro.test(Pima.tr$bmi)
 hist(Pima.tr$bmi, freq = FALSE, xlab = "BMI", ylab = "Density", col = "red", main = "Density histogram of BMI")
 
  
- 
- 
- 
- 
+#############################################################################################################################
+## two sample t-test
+#############################################################################################################################
+
+## to see if there is a difference between two groups
+head(birthwt)
+##   low age lwt race smoke ptl ht ui ftv  bwt
+##85   0  19 182    2     0   0  0  1   0 2523
+##86   0  33 155    3     0   0  0  0   3 2551
+##87   0  20 105    1     1   0  0  0   1 2557
+##88   0  21 108    1     1   0  0  1   2 2594
+##89   0  18 107    1     1   0  0  1   0 2600
+##91   0  21 124    3     0   0  0  0   0 2622
+
+t.test(bwt ~ smoke, mu = 0, alternative = "two.sided", data = birthwt)
+##        Welch Two Sample t-test
+##
+##data:  bwt by smoke
+##t = 2.7299, df = 170.1, p-value = 0.007003
+##alternative hypothesis: true difference in means is not equal to 0
+##95 percent confidence interval:
+##  78.57486 488.97860
+##sample estimates:
+##mean in group 0 mean in group 1 
+##       3055.696        2771.919 
+
+setwd
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
  
