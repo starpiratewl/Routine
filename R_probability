@@ -1,8 +1,7 @@
-###################################################################################
+###############################################################################################################
 ## These codes are from book Biostatistics with R ---An Introduction to Statistics Through Biological Data
 ## Babak Shahbaba
-
-###################################################################################
+###############################################################################################################
 ##binominal distribution
 
 rbinom(10, size = 10, prob = 0.2)
@@ -121,11 +120,23 @@ dhyper(x, m, n, k)
 #[1] 0.1466571
 
 
+hypergeometry_seq <- c(1,2,3,4,5,6,7,8,9,10)
+m = 10
+n = 190
+k = 50
+pph <- dhyper(hypergeometry_seq, m, n, k)
+plot(hypergeometry_seq, pph, type = "l", xlab = "seq", ylab = "hypergeometry probability")
+abline(h = 0, col = "gray")
 
 
 
-
-
+hypergeometry_seq <- seq(1:10)
+m = 10
+n = 190
+k = 199
+pph <- dhyper(hypergeometry_seq, m, n, k)
+plot(hypergeometry_seq, pph, type = "l", xlab = "seq", ylab = "hypergeometry probability")
+abline(h = 0, col = "gray")
 
 
 
