@@ -720,4 +720,33 @@ output$expected
 
 
 
+#################################
+## Fisher's exact test
+#################################
+
+## For Person’s χ 2 test to be valid, the expected frequencies (Eij ) under the null should be at least 5, so we can 
+## assume that the distribution of Q is approximately χ 2 under the null. Occasionally, this requirement is violated 
+## (especially when the sample size is small, or the number of categories is large, or some of the categories are rare), 
+## and some of the expected frequencies become small (less than 5).
+
+## under this circumstance, if we use the χ2 test, R-Commander gives a warning message indicating that “2 expected 
+## frequencies are less than 5” , In this case, instead of using Pearson’s χ2 test (which assumes that Q statistic 
+## has an approximate χ 2 distribution), we should use Fisher’s exact test (which is based on the exact distribution 
+## of a test statistic that captures the deviation from the null).
+
+
+TypeN <- c(2,21,35,74)
+TypeY <- c(0,2,8,58)
+tab <- cbind(TypeN, TypeY)
+
+## pay attention here, we should give fisher.test() function a matrix to perform the hypothesis test
+fisher.test(tab)
+##
+##	Fisher's Exact Test for Count Data
+##
+##data:  tab
+##p-value = 0.0001842
+##alternative hypothesis: two.sided
+
+
 
