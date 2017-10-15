@@ -127,9 +127,9 @@ t.test(Platelet$Before, Platelet$After, alternative = "less", paired = T)
 ## mean of the differences 
 ##               -10.27273 
 
-## pay close attention here, if our experiment design is paired, the data analysis should use paired t test, or the result will
-## be completely different. Check the following result and compare it with the result above, the only difference is the parameter
-## "paired = T", but the conclusion is almost reverse.
+## pay close attention here, if our experiment design is paired, the data analysis should use paired t test, or the result 
+## will be completely different. Check the following result and compare it with the result above, the only difference is the 
+## parameter "paired = T", but the conclusion is almost reverse.
 t.test(Platelet$Before, Platelet$After, alternative = "less")
 ##        Welch Two Sample t-test
 ##
@@ -506,16 +506,28 @@ summary(aov1.out)
 ## p-value is then 0.04. 
 
 
-## About the assumptions 
+## About the assumptions (IID, normality, equal variance)
+## The independence assumption is violated, for example, if we obtain multiple observations (e.g., over a period of time) 
+## for each subject in our sample. In this case, we need to use repeated- measures ANOVA (not discussed in this book), 
+## which can be regarded as a gener- alization of paired t-tests. 
+
+## The consequence of violating the normality assumption is not very severe as long as the sample sizes for all the groups are large enough so the distributions of the sample means are approximately normal due to the central limit theorem. 
+
+## Finally, the assumption of equal variance among all groups is usually unrealistic and is often violated in practice. 
+## This is clearly the case for the example discussed in our example. In practice, you are likely to see problems more 
+## similar this example (maybe not ad sever) that problems where the assumption of equal variance holds. Similar to the
+## normality assumption, the results of ANOVA are not severely affected if the group variances moderately differ from 
+## each other. Alternatively, we could use ANOVA models without the equal variance assumption. See Weerahandi (2003) [38] 
+## for example.
+## Sometimes, we can stabilize the variance (i.e., making it approximately constant) by using simple data transformations 
+## such as log or square root.
+## 38. Weerahandi,S.:ExactStatisticalMethodsforDataAnalysis.Springer,Berlin(2003)
 
 
 
 
 
-
-
-
-
+## the two way ANOVA
 
 library(MASS)
 data(genotype)
@@ -528,9 +540,7 @@ summary(aov2.out)
 ##---
 ##Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-
-
-
+## take the interaction of the two variables into account
 library(MASS)
 data(genotype)
 aov2.int.out <- aov(Wt ~ Mother * Litter, data = genotype)
@@ -546,10 +556,167 @@ summary(aov2.int.out)
 
 
 
+#############################################################################################################################
+## Analysis of Categorical 
+#############################################################################################################################
+
+## please be attention that here we use Pearson’s χ2 (chi-squared) test for testing hypothe- ses regarding the 
+## distribution of a categorical variable or the relationship between two categorical variables.
+## But categorical variables are not equal to binominal variables which we use z-test to test the hypothesis in above sections
+## Categorical variables can be binary, but not do not have to be binary.
+
+
+## Pearson’s χ2 test uses a test statistic, which we denote as Q, to measure the discrepancy between the observed data 
+## and what we expect to observe under the null hypothesis (i.e., assuming the null hypothesis is true). Higher levels of
+## discrepancy between data and H0 results in higher values of Q. We use q to denote the observed value of Q based on a
+## specific sample of observed data. As usual, we need to find the null distribution of Q (i.e., its sampling distribution
+## assuming that H0 is true) and measure the observed significance level pobs by calculating the probability of values as 
+## or more extreme than the observed value q.
+
+
+#################################
+## binary variables
+#################################
+
+###################################
+##Q = (O1 - E1)^2/E1 + (O2 - E2)^2/E2 
+###################################
+## O1 and O2 represent the observed values, E1 and E2 are expected values according to the null hypothesis
+
+## If the null hypothesis is true, then the approximate distribution of Q is χ2. Like the t -distribution, the χ 2 
+## -distribution is commonly used for hypothesis testing. Also, similar to the t distribution, the χ2 distribution 
+## is defined by its degrees of freedom df (which is a positive number) and is denoted χ 2 (df ). 
+
+chisq.test(x = c(24, 16), p = c(0.7, 0.3))
+##
+##	Chi-squared test for given probabilities
+##
+##data:  c(24, 16)
+##X-squared = 1.9048, df = 1, p-value = 0.1675
+
+
+
+###################################
+##Q = (O1 - E1)^2/E1 + (O2 - E2)^2/E2 + (O3 - E3)^2/E3 + ... + (Oi - Ei)^2/Ei
+###################################
+## generalize the formula to multiple category levels
+
+
+chisq.test(x = c(13, 11, 16), p = c(0.5, 0.2, 0.3))
+##
+##	Chi-squared test for given probabilities
+##
+##data:  c(13, 11, 16)
+##X-squared = 4.9083, df = 2, p-value = 0.08593
+
+
+## Pearson’s χ2 Test of Independence
+
+library(MASS)
+head(birthwt)
+
+table(birthwt$smoke, birthwt$low)
+##     0  1
+##  0 86 29
+##  1 44 30
+
+prop.table(table(birthwt$smoke, birthwt$low))
+##           0         1
+##  0 0.4550265 0.1534392
+##  1 0.2328042 0.1587302
+
+prop_tab <- prop.table(table(birthwt$smoke, birthwt$low))
+## pay attention here, this "prop_tab" is atomic vectors, not data.frame or matrix, so the prop_tab$XX is not useful
+
+Notlow <- as.vector(prop_tab[,1])
+Low <- as.vector(prop_tab[,2])
+ftab <- cbind(Notlow, Low)
+ftab <- as.data.frame(ftab)
+## pay attention here, the following execution will not success unless the ftab is a data.frame
+ftab$S_F <- ftab[,1] + ftab[,2]
+ftab[3,] <- ftab[1,] + ftab[2,]
+row.names(ftab) <- c("Nonsmoke", "Smoke", "L_F")
+ftab
+##            Notlow       Low       S_F
+##Nonsmoke 0.4550265 0.1534392 0.6084656
+##Smoke    0.2328042 0.1587302 0.3915344
+##L_F      0.6878307 0.3121693 1.0000000
+
+## To see how the expected frequencies are calculated, recall that for two indepen- dent variables, the probability 
+## of the intersection of events is the product of their individual probabilities. Therefore, for example, the 
+## probability that the mother is smoker (i.e., smoke=1) and the baby has low birthweight (i.e., low=1) is the 
+## product of smoker and low-birthweight probabilities.
+
+## the sample size is 86 + 29 + 44 + 30 = 189
+## the expect frequency of the table is as follows:
+exp_tab <- matrix(c(1,1,1,1), nrow = 2, ncol = 2)
+for(i in 1:length(exp_tab[,1])){
+ for(k in 1:length(exp_tab[1,])){
+  exp_tab[i,k] <- ftab[i,3] * ftab[3,k]
+ }
+}
+exp_tab
+##          [,1]      [,2]
+##[1,] 0.4185213 0.1899443
+##[2,] 0.2693094 0.1222250
+
+exp_tab <- exp_tab * 189
+##         [,1]     [,2]
+##[1,] 79.10053 35.89947
+##[2,] 50.89947 23.10053
+
+table(birthwt$smoke, birthwt$low)
+##     0  1
+##  0 86 29
+##  1 44 30
+
+##X-squared = (86-79.10053)^2/79.10053 + (29 - 35.89947)^2/35.89947 + (44 - 50.89947)^2/50.89947 + (30- 23.10053)^2/23.10053
+##X-squared = 4.923704
+
+
+## The following R command give the same result X-squared = 4.9237
+birthwt.tab <- table(birthwt$smoke, birthwt$low)
+birthwt.tab
+##     0  1
+##  0 86 29
+##  1 44 30
+
+chisq.test(birthwt.tab, correct = FALSE)
+##
+##	Pearson's Chi-squared test
+##
+##data:  birthwt.tab
+##X-squared = 4.9237, df = 1, p-value = 0.02649
 
 
 
 
+
+contTable <- matrix(c(189, 10845, 104, 10933), nrow=2,ncol=2,byrow=TRUE)
+rownames(contTable) <- c("Placebo", "Aspirin")
+colnames(contTable) <- c("No heart attack", "Heart attack")
+contTable
+##        No heart attack Heart attack
+##Placebo             189        10845
+##Aspirin             104        10933
+
+
+output <- chisq.test(contTable, correct = FALSE)
+output
+##	Pearson's Chi-squared test
+##
+##data:  contTable
+##X-squared = 25.014, df = 1, p-value = 5.692e-07
+
+output$observed
+##        No heart attack Heart attack
+##Placebo             189        10845
+##Aspirin             104        10933
+
+output$expected
+##        No heart attack Heart attack
+##Placebo        146.4801     10887.52
+##Aspirin        146.5199     10890.48
 
 
 
