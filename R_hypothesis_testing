@@ -238,6 +238,10 @@ head(bodyfat)
 ## 5    5   27.8 28.7  1.0340  24 184.25  71.25 34.4  97.3   100.0 101.9  63.2 42.2  24.0   32.2    27.7  17.7
 ## 6    6   20.6 20.9  1.0502  24 210.25  74.75 39.0 104.5    94.4 107.8  66.0 42.0  25.6   35.7    30.6  18.8
 
+
+## here we not only caculate the corelation coefficient, but also test if the corelation coefficient is statistically 
+## significant
+
 cor.test(bodyfat$siri, bodyfat$abdomen, alternative = "greater")
 ##        Pearson's product-moment correlation
 ##
@@ -250,12 +254,171 @@ cor.test(bodyfat$siri, bodyfat$abdomen, alternative = "greater")
 ##      cor 
 ##0.8134323 
 
+## the t score is calculated as follows:
+## t = r/sqrt((1-r^2)/(n-2))
+## here, r = 0.8134323, n = 252 -2, and t is 22.112, this result is equal to the cor.test() function
+
+
+
 
 ## the following function give the cor matrix
 cor(bodyfat[,c("abdomen","siri")])
 ##           abdomen      siri
 ## abdomen 1.0000000 0.8134323
 ## siri    0.8134323 1.0000000
+
+
+
+
+#############################################################################################################################
+## Analysis of Variance (ANOVA) 
+#############################################################################################################################
+
+##analysis of variance is a special case of t test
+## think about this case, if we compare two groups, we can use two sample t test
+## but if we want to compare three or more groups, what shall we do?
+## we can still use two sample t test, but we have to do t test many times
+## this situation is very common in research, for example, tumor patients have many stages, and in each stage, we may be
+## interested in a variable, then our job is to compare this variable among the different stages
+## so it also means the factor in the anova will have at least three levels
+
+library(MASS)
+data(Cushings)
+
+## I want to plot the dotplot on page 233
+## but surprisingly I found that the default plot function in R cannot do this
+plot(Tetrahydrocortisone ~ Type, data = Cushings)
+plot(Cushings$Type,Cushings$Tetrahydrocortisone,  col = "red", sub = "This is hypothetical data", xlab = "Type", ylab = "Tetrahydrocortisone")
+## why the above two functions cannot give the dotplot but give the boxplot?
+## the variable of the data set "Type" is factor, so the default of plot give boxplot result according to factors in "Type"
+## class(Cushings$Type)
+## [1] "factor"
+
+## if we change the factor to numerical calls, then it can give the dotplot
+Cushings$Typen <- as.character(Cushings$Type)
+## here we should pay close attention
+## we want to change the facter levels a,b,c,u to 1,2,3,4, so totally it means factor to numeric transformation
+## the following code are designed to change a to 1, b to 2 and as such, but notice that, in the following code
+## we treat a, b, c, u as character, if we donot transform factor to character first
+## then we will get error in execution of the following code
+for (i in 1:length(Cushings$Type)){
+ if(Cushings[i,3] == "a"){Cushings[i,4] = 1}else if(Cushings[i,3] == "b"){
+  Cushings[i,4] = 2
+ }else if(Cushings[i,3] == "c"){
+  Cushings[i,4] = 3
+ }else if(Cushings[i,3] == "u"){
+  Cushings[i,4] = 4
+ }
+}
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## and pay attention to the else if function writting style again, it fools me many times!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+## !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+plot(Cushings$Typen,Cushings$Tetrahydrocortisone,  col = "red", sub = "This is hypothetical data", xlab = "Type", ylab = "Tetrahydrocortisone")
+## this time the plot() function give the dotplot we want
+
+
+## But we still want the dot plot as the showed in many paper, the dot in this dotplot are scattered according to
+## different groups, but they are not showed overlaping with each other, but we donot want them to overlap
+## finally I get wo know that this plot(dotplot) should use special package or other method
+install.packages("beeswarm")
+install.packages("plotrix")
+library(beeswarm)
+library(plotrix)
+
+require(beeswarm)
+data(breast)
+head(breast)
+##            ER      ESR1     ERBB2 time_survival event_survival
+##100.CEL.gz neg  8.372133 13.085894            39              1
+##103.CEL.gz pos 10.559356  9.491683            97              0
+##104.CEL.gz pos 12.299905  9.599574            11              1
+##105.CEL.gz pos 10.776632  9.681747            99              0
+##106.CEL.gz pos 10.505124  9.436763            40              1
+##107.CEL.gz neg 10.377741  8.695576            94              0
+require(plotrix)
+cluster<-cluster.overplot(breast$event_survival, breast$time_survival)
+png("dothist.png",width=1000,height=1000)
+opar<-par(mfrow=c(3,3))
+
+## This is plot one , in this plot, dot are overlap with each other as we showed in last example
+plot (breast$event_survival, breast$time_survival, main="Multiple points on coordinate", col=as.numeric(breast$ER),xaxt="n",xlim=c(-1,2))
+axis(1,at=c(0,1),labels=c("Censored","Metastasis"))
+
+## This is plot two, in this plot, dots are not so densely overlap with each other
+plot(jitter(breast$event_survival), breast$time_survival, main="Using Jitter on x-axis", col=as.numeric(breast$ER),xaxt="n",xlim=c(-0.5,1.5))
+axis(1,at=c(0,1),labels=c("Censored","Metastasis"))
+
+## This is plot three, comparing with plot two, the difference is we perform jitter() function to both x and y values
+## in plot three, why? because in plot two, we perform jitter() function only to x values, it did pretty good, but
+## there still many dots overlap with each other, so in plot three, we perform jitter() to both x and y values
+plot(jitter(breast$event_survival), jitter(breast$time_survival), main="Using Jitter on x and y-axis", col=as.numeric(breast$ER),xaxt="n",xlim=c(-0.5,1.5))
+axis(1,at=c(0,1),labels=c("Censored","Metastasis"))
+
+## or we can use factor parameter in jitter() function to make the dots scatter more dispersedly
+plot(rep(c(1,5,10),each=5),c(jitter(rep(100,5),factor=1),jitter(rep(100,5),factor=5), jitter(rep(100,5),factor=10)),col=c("red","blue","green","gray","black"),xlim=c(-2,13),xlab="", ylab="y",xaxt="n",main="jitter(rep(100,5)) with different factor")
+axis(1,at=c(1,5,10),labels=c(paste("factor=",c(1,5,10),sep="")))
+
+
+## This is plot four, this is so called sunflower plot. sunflowerplot is used to show the number of dots via the number of
+## of petals at the same coordinates. But in this example, it seems not so readable.
+## sunflowerplot函数。它的目的是用花瓣数目多少来显示落在同一坐标上的点的数目。但是从中左图看来，点多的时候效果并非总是那么好。
+sunflowerplot(breast$event_survival, breast$time_survival, main="Using Sunflowers",xaxt="n",xlim=c(-0.5,1.5))
+axis(1,at=c(0,1),labels=c("Censored","Metastasis"))
+
+## This is plot five, this plot use cluster.overplot to cluster values first, the function enclosed in plotrix package
+plot(cluster, main="Using cluster.overplot",col=as.numeric(breast$ER),xaxt="n",xlim=c(-0.5,1.5))
+axis(1,at=c(0,1),labels=c("Censored","Metastasis"))
+
+## This is plot six,count.overplot() function in plotrix package
+count.overplot(jitter(breast$event_survival), jitter(breast$time_survival), main="Using cout.overplot", col=as.numeric(breast$ER),xaxt="n")
+axis(1,at=c(0,1),labels=c("Censored","Metastasis"))
+
+## This is plot seven, this is so called size plot, sizeplot() function in plotrix package
+sizeplot(breast$event_survival, breast$time_survival, main="Using sizeplot",col=as.numeric(breast$ER), xaxt="n",xlim=c(-0.5,1.5))
+axis(1,at=c(0,1),labels=c("Censored","Metastasis"))
+
+## The above three plots(five, six, seven) all use the functions in plotrix package
+## 分别是cluster.overplot, count.overplot, sizeplot。这三个函数的效果如图中及下靠左的两个。cluster.overplot的方法类似抖散，count overplot的方法是使用数字来显示落在同一坐标上的点的数目，sizeplot的方法是使用不同大小是点来显示落在同一坐标上的点的数目。从效果来看，点多的时候效果也并非理想。而上一次提到过的蜂群图似乎是解决这一问题的较佳方案。
+##我们得出结论，在点数不同的情况下，使用plotrix包及sunflowerplot是不错的。但点数较多的情况下，还是使用jitter和beeswarm较为稳妥。
+
+
+## This is plot eight, this plot is exactly what we want, this is so called beeswarm plot
+beeswarm(time_survival ~ event_survival, data = breast, method = 'swarm', pch = 16, pwcol = as.numeric(ER), xlab = '', ylab = 'Follow-up time (months)', labels = c('Censored', 'Metastasis'))
+dev.off()
+##quartz
+##     2
+par(opar)
+
+## we can also use ggplot to get the beeswarm plot
+require(beeswarm)
+data(breast)
+library(ggplot2)
+p<-ggplot(breast, aes(event_survival,time_survival))
+print(p+geom_jitter(aes(color=ER))+scale_colour_manual(value = c("black", "red"))+scale_x_continuous(breaks = c(0:1), labels = c("Censored", "Metastasis")))
+
+
+
+##还有一种图，名称为Engelmann-Hecker-Plot， 由plotrix的ehplot来实现
+data(iris)
+library(plotrix)
+ehplot(iris$Sepal.Length, iris$Species, intervals=20, cex=1.8, pch=20, main="pch=20")
+ehplot(iris$Sepal.Width, iris$Species, intervals=20, box=TRUE, median=FALSE, main="box=TRUE")
+ehplot(iris$Petal.Length, iris$Species, pch=17, col="red", log=TRUE, main="pch=17")
+ehplot(iris$Petal.Length, iris$Species, offset=0.06, pch=as.numeric(iris$Species), main="pch=as.numeric(iris$Species)")
+rnd <- sample(150)
+plen <- iris$Petal.Length[rnd]
+pwid <- abs(rnorm(150, 1.2))
+spec <- iris$Species[rnd]
+ehplot(plen, spec, pch=19, cex=pwid, col=rainbow(3, alpha=0.6)[as.numeric(spec)], main="cex and col changes")
+
+
+
+
+
+
+
+
+
 
 
 
