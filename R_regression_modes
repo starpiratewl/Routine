@@ -32,7 +32,7 @@ summary(test_fit)
 ##F-statistic: 15.43 on 1 and 23 DF,  p-value: 0.0006716
 
 
-##Residual Sum of Squares (RSS)
+## Residual Sum of Squares (RSS)
 ## RSS = sum(e1^2 + e2^2 + e3^2 + ... + ei^2)
 
 ## y = a + b * x
@@ -62,6 +62,41 @@ pt(3.93, df = 23, lower.tail = F)
 ## 0.000334624
 ## the final pvalue = 0.000334624 * 2 = 0.000669248
 ## the result is the same as the result on page 263 and lm() function result in R
+
+head(tab)
+##      BP salt saltLevel     exp    res
+##1 132.19 1.55         0 133.173 -0.983
+##2 131.84 1.13         0 133.173 -1.333
+##3 133.86 4.88         0 133.173  0.687
+##4 135.08 4.11         0 133.173  1.907
+##5 129.85 1.55         0 133.173 -3.323
+##6 136.84 4.69         0 133.173  3.667
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## install.packages("mfp", dependencies = TRUE)
