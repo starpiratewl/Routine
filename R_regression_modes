@@ -1,9 +1,67 @@
+getwd()
+list.files()
+tab <- read.csv(file = "saltBP.txt", stringsAsFactors = F)
+
+test_fit <- lm(BP ~ saltLevel, data = tab)
+test_fit
+##Call:
+##lm(formula = BP ~ saltLevel, data = tab)
+##
+##Coefficients:
+##(Intercept)    saltLevel  
+##    133.173        6.256 
+
+summary(test_fit)
+##
+##Call:
+##lm(formula = BP ~ saltLevel, data = tab)
+##
+##Residuals:
+##    Min      1Q  Median      3Q     Max 
+##-8.2990 -3.5627  0.6873  3.2110  5.5910 
+##
+##Coefficients:
+##            Estimate Std. Error t value Pr(>|t|)    
+##(Intercept)  133.173      1.007 132.222  < 2e-16 ***
+##saltLevel      6.256      1.593   3.929 0.000672 ***
+##---
+##Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+##
+##Residual standard error: 3.901 on 23 degrees of freedom
+##Multiple R-squared:  0.4016,	Adjusted R-squared:  0.3756 
+##F-statistic: 15.43 on 1 and 23 DF,  p-value: 0.0006716
 
 
+##Residual Sum of Squares (RSS)
+## RSS = sum(e1^2 + e2^2 + e3^2 + ... + ei^2)
 
+## y = a + b * x
+## For b is a point estimation of the slope of the regression line, to establish a confidence interval, we have to get
+## the SE and with the help of SE, we can even perform the hypothesis testing
+## SEb = sqrt(RSS/(n - 2))/sqrt(sum((x1 - x)^2 + (x2 - x)^2 + (x3 - x)^2 + ... + (xi - x)^2))
+## n is the sample size
 
+tab$exp <- 133.173 + 6.256 * tab$saltLevel
+tab$res <- tab$BP - tab$exp
+tab_RSS <- sum(tab$res^2)
+tab_RSS
+##[1] 349.9796
+tab_var <- tab$saltLevel - mean(tab$saltLevel)
 
+tab_SEb <- sqrt(tab_RSS/(25-2))/sqrt(sum(tab_var^2))
+tab_SEb
+##[1] 1.592509
+## the result is the same as the result on page 261 and lm() function result in R
 
+t_score_b <- 6.25/tab_SEb
+t_score_b
+##[1] 3.924625
+## the result is the same as the result on page 263 and lm() function result in R
+## this  t-distribution has a df of 25 - 2 = 23, the pvalue
+pt(3.93, df = 23, lower.tail = F)
+## 0.000334624
+## the final pvalue = 0.000334624 * 2 = 0.000669248
+## the result is the same as the result on page 263 and lm() function result in R
 
 
 ## install.packages("mfp", dependencies = TRUE)
