@@ -1,0 +1,104 @@
+
+
+
+
+
+
+
+
+## install.packages("mfp", dependencies = TRUE)
+library(mfp)
+data(bodyfat)
+
+
+fit <- lm(siri ~ height, data = bodyfat)
+
+fit
+##Call:
+##lm(formula = siri ~ height, data = bodyfat)
+##
+##Coefficients:
+##(Intercept)       height  
+##    33.4945      -0.2045 
+
+summary(fit)
+##Call:
+##lm(formula = siri ~ height, data = bodyfat)
+##
+##Residuals:
+##     Min       1Q   Median       3Q      Max 
+##-19.5902  -6.7124   0.3966   6.0716  27.0919 
+##
+##Coefficients:
+##            Estimate Std. Error t value Pr(>|t|)   
+##(Intercept)  33.4945    10.1096   3.313  0.00106 **
+##height       -0.2045     0.1439  -1.421  0.15664   
+##---
+##Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+##
+##Residual standard error: 8.352 on 250 degrees of freedom
+##Multiple R-squared:  0.008009,	Adjusted R-squared:  0.004041 
+##F-statistic: 2.019 on 1 and 250 DF,  p-value: 0.1566
+
+names(fit)
+##[1] "coefficients"  "residuals"     "effects"       "rank"          "fitted.values" "assign"        "qr"            "df.residual"   "xlevels"      
+##[10] "call"          "terms"         "model" 
+
+fit$coefficients
+##(Intercept)      height 
+## 33.4944938  -0.2044753
+
+fit$fitted.values[1:5]
+##       1        2        3        4        5 
+##19.64129 18.72115 19.94800 18.72115 18.92563 
+
+fit$residuals[1:5]
+##         1          2          3          4          5 
+## -7.341291 -12.621152   5.351996  -8.321152   9.774373 
+
+plot(bodyfat$height, bodyfat$siri, main = "Scatterplot for Percent Body Fat by Height", xlab = "Height", ylab = "Percent Body Fat")
+abline(fit)
+
+
+multReg <- lm(siri ~ height + abdomen, data = bodyfat)
+
+summary(multReg)
+##Call:
+##lm(formula = siri ~ height + abdomen, data = bodyfat)
+##
+##Residuals:
+##     Min       1Q   Median       3Q      Max 
+##-18.8513  -3.4825  -0.0156   3.0949  11.1633 
+##
+##Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+##(Intercept) -14.31075    6.04265  -2.368   0.0186 *  
+##height       -0.37053    0.08122  -4.562 7.95e-06 ***
+##abdomen       0.64236    0.02759  23.283  < 2e-16 ***
+##---
+##Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+##
+##Residual standard error: 4.695 on 249 degrees of freedom
+##Multiple R-squared:  0.6878,	Adjusted R-squared:  0.6853 
+##F-statistic: 274.2 on 2 and 249 DF,  p-value: < 2.2e-16
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
