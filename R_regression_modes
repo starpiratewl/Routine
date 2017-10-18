@@ -241,17 +241,148 @@ cor(tab$BP, tab$salt)^2
 ##       is also known as the homoscedasticity assumption. To check the validity of these assumptions. we examine the 
 ##       residuals e that are observed values of the random variable e.
 ##       This examine can be performed with the help of residual plot. 
-##       The horizontal line represents the regression line, the residues are scattered randomly around the horizontal line
-##       at zero without any pattern. The solid line shows the overall pattern of the residuals. This line should remain close
-##       to the horizontal line. It is very important that we do not see any nonrandom pattern in the residual plot. For example
-##       we should not see small variations 
-##
-
+##       The dash line represents the regression line, the residues are scattered randomly around the dash line
+##       without any pattern. The solid line shows the overall pattern of the residuals. This line should remain close
+##       to the horizontal line. It is very important that we do not see any nonrandom pattern in the residual plot. 
+##       For example we should not see small variations around the dash line in one region and high variations in another region
+##       The following codes give the residual plot to check for the residual distribution
 
 install.packages("car")
 library(car)
-crplots()
+crPlots(fit <- lm(BP ~ salt, data = tab))
 
+##       When the constant variance assumption does hot hold, we can sometimes stabilize the variance using simple
+##       transformations of the response variable so the variance becomes approximately constant
+##       For example, instead of Y, we could use sqrt(Y)(usually Y is a count variable) or log(Y) in regression model
+##       Another strategy is to use weighted least squares instead of the standard least squares approach
+
+## SEe = sqrt(RSS/(n- 2))
+## n is the sample size
+## SEe is the regression standard error
+## so we can rewrite the SEb formulaa as :
+## SEb = SEe/sqrt(sum((x1 - mean(x))^2 + (x2 - mean(x))^2 + (x3 - mean(x))^2 + ... + (xi - mean(x))^2))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################################################
+## Multiple linear Regression
+## If our objective is to predict unknown values of the reponse variable, we might be able to improve prediction accuracy by
+## including multiple predictors in the linear regression model. Models with multiple explanatory variables or predictors
+## are call ed multiple linear regression models
+
+## In practice, we need to  specify our objective for building linear regression model clearly!!
+## If our objective is to examine possible relationships between the response variable and one or more explanatory variables,
+##    we should specify our hypothesis prior to our analysis. In this case, our decision to include an explanatory variable in
+##    the model must be hypothesis-driven and based onour domain knowledge. When testing a hypothesis, we should avoid finding
+##    our model through exploring all possible combinations of variables available to us.
+## If our objective is to predict the unknown values of the response variable, we could use our domain knowledge to identify
+##    a set of promising predictors and then explore all possible combinations of these variables until we find a model
+##    that provide the best predictions
+
+## MSE ( mean squared error)
+## MSE = 1/N * sum((y1 - y1p)^2 + (y2 - y2p)^2 + (y3 - y3p)^2 + ... + (yi - yip)^2)
+## y1...yi are the observed values
+## y1p ... yip are the predicted values
+
+## to perform this calculation, in practice , we can divide our dataset to test set and training set.
+## we use the training set to fit the models
+## we use the test set to predict the response variable and compare the observed value and predicted value
+
+## in multiple regression models
+## R2 = 1 - RSS/TSS
+## SEe = sqrt(RSS/(n - p - 1))
+## pay attention here, n is the sample size, p is the number of explanatory variables in the model
+## this is different from the simple regression model :
+## SEe = sqrt(RSS/(n- 2))
+
+## for each regression coefficient bj, we can calculate the SEbj along with its point estiamte bj, similar to simple regression
+## model, we can perform the hypothesis testing using t distribution:
+## tj = bj / SEbj
+
+library(MASS)
+data(birthwt)
+mulreg_test <-lm(bwt ~ age + smoke, data = birthwt)
+summary(mulreg_test)
+##
+##Call:
+##lm(formula = bwt ~ age + smoke, data = birthwt)
+##
+##Residuals:
+##     Min       1Q   Median       3Q      Max 
+##-2119.98  -442.66    52.92   532.38  1690.74 
+##
+##Coefficients:
+##            Estimate Std. Error t value Pr(>|t|)    
+##(Intercept) 2791.224    240.950  11.584   <2e-16 ***
+##age           11.290      9.881   1.143    0.255    
+##smoke       -278.356    106.987  -2.602    0.010 *  
+##---
+##Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+##
+##Residual standard error: 717.2 on 186 degrees of freedom
+##Multiple R-squared:  0.04299,   Adjusted R-squared:  0.0327 
+##F-statistic: 4.177 on 2 and 186 DF,  p-value: 0.0168
+
+## y = 2791.224 + 11.290 * age - 278.356 * smoke
+
+## let us calculate the relative parameters to validate the result of lm() function in R
+birthwt$bwt_pre <- 2791.224 + 11.290 * birthwt$age - 278.356 * birthwt$smoke
+bwt_RSS <- sum((birthwt$bwt - birthwt$bwt_pre)^2)
+bwt_TSS <- sum((birthwt$bwt - mean(birthwt$bwt))^2)
+bwt_R2 <- 1 - bwt_RSS/bwt_TSS
+bwt_R2
+##[1] 0.04298673
+## this result is the same as the lm() result in R
+
+SEb1 = sqrt(bwt_RSS/(189 -2 -1)) / sqrt(sum((birthwt$age - mean(birthwt$age))^2))
+SEb2 = sqrt(bwt_RSS/(189 -2 -1)) / sqrt(sum((birthwt$smoke - mean(birthwt$smoke))^2))
+
+SEb1
+##[1] 9.871659
+SEb2
+##[1] 106.8815
+## this result is the same as the lm() result in R
+
+tb1 <- 11.290/SEb1
+tb2 <- - 278.356/SEb2
+tb1
+##[1] 1.143678
+tb2
+##[1] -2.604341
+## this result is the same as the lm() result in R
+
+pvalueb1 <- pt(tb1, df = 188, lower.tail = F) * 2
+## pay attention here, the t value is positive, so we use the lower.tail = F
+pvalueb2 <- pt(tb2, df = 188, lower.tail = T) * 2
+## pay attention here, the t value is negative, so we use the lower.tail = T
+
+pvalueb1
+##[1] 0.2542114
+pvalueb2
+##[1] 0.009940866
+## this result is the same as the lm() result in R
+
+sd(birthwt$bwt - birthwt$bwt_pre)
+##[1] 713.3689
+## this result is different from the result in the lm() function in R, why ?
+## because the df setting, here we should use the df n - p - 1
+
+birthwt_error <- birthwt$bwt - birthwt$bwt_pre
+sqrt(sum((birthwt_error - mean(birthwt_error))^2) / (189 - 2 - 1))
+##[1] 717.1939
+## this result is the same as the lm() result in R
 
 
 
