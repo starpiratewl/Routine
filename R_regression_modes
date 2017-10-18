@@ -1,4 +1,5 @@
 getwd()
+setwd("D:\\importantbk\\learning\\data\\R_documentation\\biostatistics_with_R")
 list.files()
 tab <- read.csv(file = "saltBP.txt", stringsAsFactors = F)
 
@@ -73,9 +74,183 @@ head(tab)
 ##6 136.84 4.69         0 133.173  3.667
 
 
+######################################################
+## The above example is very limited,because we use a binary variable as an explanatory , it is rarely the case in practice
+## Following we are going to use a numerical variable as explanatory variable
+
+getwd()
+setwd("D:\\importantbk\\learning\\data\\R_documentation\\biostatistics_with_R")
+list.files()
+tab <- read.csv(file = "saltBP.txt", stringsAsFactors = F)
+
+## the coefficient of the two variables is large enough and statistically significant
+## the Pearson's product-moment correlation is positive means the two variables are positively correlated
+cor.test(tab$BP, tab$salt)
+##
+##        Pearson's product-moment correlation
+##
+##data:  tab$BP and tab$salt
+##t = 7.3888, df = 23, p-value = 1.631e-07
+##alternative hypothesis: true correlation is not equal to 0
+##95 percent confidence interval:
+## 0.6636134 0.9267667
+##sample estimates:
+##      cor 
+##0.8387992 
+
+fit <- lm(BP ~ salt, data = tab)
+summary(fit)
+##
+##Call:
+##lm(formula = BP ~ salt, data = tab)
+##
+##Residuals:
+##    Min      1Q  Median      3Q     Max 
+##-5.0388 -1.6755  0.3662  1.8824  5.3443 
+##
+##Coefficients:
+##            Estimate Std. Error t value Pr(>|t|)    
+##(Intercept)  128.616      1.102 116.723  < 2e-16 ***
+##salt           1.197      0.162   7.389 1.63e-07 ***
+##---
+##Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+##
+##Residual standard error: 2.745 on 23 degrees of freedom
+##Multiple R-squared:  0.7036,    Adjusted R-squared:  0.6907 
+##F-statistic: 54.59 on 1 and 23 DF,  p-value: 1.631e-07
+
+## the essence of linear model fitting is to find the a and b in  y = a + bx
+## how to calculate these two values
+
+## b = r * Sy/Sx
+## r is the correlation  coefficient
+## Sy is the standard deviation of response Y 
+## Sx is the standard deviation of explanatory X
+## in our example:
+b <- cor(tab$BP, tab$salt) * sd(tab$BP) / sd(tab$salt)
+b
+## [1] 1.196894
+## the result is same as the lm() function result in R and the result on page 267
+
+
+## a = mean(y) - b * mean(x)
+## b is the slope of the regression line, we have calculated it before hand
+## in our example
+a <- mean(tab$BP) - b * mean(tab$salt)
+a
+## [1] 128.6164
+## the result is same as the lm() function result in R and the result on page 267
+
+## so the regression mode is y = 128.6164 + 1.196894 * x
+
+## the following is calculate the significance of b value
+tab$exp <- 128.6164 + 1.196894 * tab$salt
+tab$res <- tab$BP - tab$exp
+tab_RSS <- sum(tab$res^2)
+tab_RSS
+##[1] 173.3528
+tab_var <- tab$salt - mean(tab$salt)
+
+tab_SEb <- sqrt(tab_RSS/(25-2))/sqrt(sum(tab_var^2))
+tab_SEb
+##[1] 0.1619886
+## the result is the same as the result on page 270 and lm() function result in R
+
+t_score_b <- 1.196894/tab_SEb
+t_score_b
+##[1] 7.388754
+## the result is the same as the result on page 263 and lm() function result in R
+## this  t-distribution has a df of 25 - 2 = 23, the pvalue
+pt(7.388754, df = 23, lower.tail = F)
+## 8.156051e-08
+## the final pvalue = 8.156051e-08 * 2 = 1.63121e-07
+## the result is exacatly the same as the result on page 270 and lm() function result in R
 
 
 
+######################################################
+## model goodness assessing
+## model goodness assessing is a big issue, here we first focused on the simple R squared method
+## and then focused on the ROC method
+
+## RSS(Residual Sum of Squares) is interpreted as the unexplained variation in the response variable using the regression model
+## or we can understand the RSS as the lack of fit of the linear regression model
+## R squared is the measure of goodness of fit, that is how well our model represents the observed data and explains the variation
+## in the response variable.
+## the R squared value is between 0 and 1, the better the model fits the data, the higher its R squared value is
+## TSS(Total Sum of Squares) is calculated as the squared deviations of each observed value of the response variable yi from its
+## sample mean mean(y)
+## TSS = (y1 - mean(y))^2 + (y2 - mean(y))^2 + (y3 - mean(y))^2 + ... + (yi - mean(y))^2
+######################################
+## R squared = 1 - RSS/TSS
+######################################
+## interpretation of R squared value(R2), for example, if R2 = 0.7, it means 70% of the total variation in the response variable
+## can bu explained by the explanatory variable. The remaining 30% of the total variation can not be explained by this model
+## and is regarded as random
+
+
+## For simple linear regression models with one numerical explannatory variable, R2 is equal to the square of the 
+## corelation coefficient r
+######################################
+## R squared = r^2
+######################################
+
+##  in our example
+tab$exp <- 128.6164 + 1.196894 * tab$salt
+tab$res <- tab$BP - tab$exp
+tab_RSS <- sum(tab$res^2)
+tab_RSS
+##[1] 173.3528
+tab_TSS <- sum((tab$BP - mean(tab$BP))^2)
+##[1] 584.8298
+
+tab_R2 <- 1 - tab_RSS/584.8298
+tab_R2
+##[1] 0.7035842
+## the result is the same as the lm() function in R
+
+cor(tab$BP, tab$salt)^2
+##[1] 0.7035842
+## which is alsoa way of calculating R square
+
+## plase be very caution that even if we have a very large R2 value, it only means this model did good job in prediction  in the 
+## observed dataset, it does not translateto better predictions for other dataset or other individuals that dose not included in
+## our sample. Sometimes even if we have a small R2 value, it still better than we do not use any model for prediction
+
+## the three assumptions in linear regression fitting
+## 1. Linearity
+##       the relationship between explanatory variable and response variable is linear, this linearity can be showned in scatter plot
+##       If the linearity assumption dose not hold, we might still be able to use linear regression models after transforming the 
+##       original variables. Common transformation are logarithm(usually for response variable), square root and sqaure(usually
+##       for the predictors), the regression model will be like this:
+##       y = a + b1 * x + b2 * x^2 + e       
+##       pay attention  here, the role of x^2 is to capture possible nonlinearity in the relationship between Y and X. In this case,
+##       the null hypothesis H0 : b2 = 0 indicates that the relationship in not quadratic 
+
+## 2. Independence
+##       the individuals in our sample are not related to each other and they are mutually independence
+##       or we do not obtain multiple observations from the same individual
+##       But sometimes we selected the unrelated subjects and obtain multiple measurements(over a period of time)
+##       under this circumstances, we will use longitudinal models
+
+## 3. Constant Variance and Normality
+##       we assume the error term e is normally distributed with mean 0.   e ~ N(0, σ^2)
+##       Minor deviations from  normality will not have a substantial impacton the results as long as the sample size is large
+##       this assumption means that we expect the variation of the actual values of response variable around the regression
+##       line remains the same regardless of the explanatory value. This is called the constant variance assumption, which
+##       is also known as the homoscedasticity assumption. To check the validity of these assumptions. we examine the 
+##       residuals e that are observed values of the random variable e.
+##       This examine can be performed with the help of residual plot. 
+##       The horizontal line represents the regression line, the residues are scattered randomly around the horizontal line
+##       at zero without any pattern. The solid line shows the overall pattern of the residuals. This line should remain close
+##       to the horizontal line. It is very important that we do not see any nonrandom pattern in the residual plot. For example
+##       we should not see small variations 
+##
+
+
+install.packages("car")
+library(car)
+crplots()
 
 
 
@@ -151,6 +326,13 @@ fit$residuals[1:5]
 
 plot(bodyfat$height, bodyfat$siri, main = "Scatterplot for Percent Body Fat by Height", xlab = "Height", ylab = "Percent Body Fat")
 abline(fit)
+
+
+
+
+
+
+
 
 
 multReg <- lm(siri ~ height + abdomen, data = bodyfat)
