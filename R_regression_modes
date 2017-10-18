@@ -386,6 +386,15 @@ sqrt(sum((birthwt_error - mean(birthwt_error))^2) / (189 - 2 - 1))
 
 
 
+fit_smoke <- lm(bwt ~ age, data = birthwt[birthwt$smoke == 1,])
+fit_nonsmoke <- lm(bwt ~ age, data = birthwt[birthwt$smoke == 0,])
+
+plot(birthwt[birthwt$smoke == 1,]$age, birthwt[birthwt$smoke == 1,]$bwt, type = "p", pch = 15, col = "red", main = "Smoke vs Nonsmoke", xlab = "AGE", ylab = "Birth weight")
+
+points(birthwt[birthwt$smoke == 0,]$age, birthwt[birthwt$smoke == 0,]$bwt, type = "p", pch = 12, col = "green")
+
+abline(fit_smoke, col = "red")
+abline(fit_nonsmoke, col = "green")
 
 
 
@@ -396,13 +405,11 @@ sqrt(sum((birthwt_error - mean(birthwt_error))^2) / (189 - 2 - 1))
 
 
 
-
-
-
-
-
-
-
+## The following example show us that the importance and significance of one explanatory variable can be affected by presence
+## or absence of other explanatory variables in the model. So our inference regarding the relationship between the response 
+## variable and an explanatory variable could depend on what other variables we include in the model. Therefore, we should
+## choose the set of explanatory variables very carefully when we perform statistical inference using multiple linear 
+## regression models.
 
 
 ## install.packages("mfp", dependencies = TRUE)
@@ -420,6 +427,8 @@ fit
 ##(Intercept)       height  
 ##    33.4945      -0.2045 
 
+## pay attention here, we add only one predictor in this model, but this result turns out not to be significant
+## the pvalue of height is only  0.15664 
 summary(fit)
 ##Call:
 ##lm(formula = siri ~ height, data = bodyfat)
@@ -465,7 +474,8 @@ abline(fit)
 
 
 
-
+## pay attention here, we add another predictor in this model, but this time both predictors turns out to be significant
+## the pvalue of height and abdomen is 7.95e-06 and < 2e-16 , both are very significant
 multReg <- lm(siri ~ height + abdomen, data = bodyfat)
 
 summary(multReg)
