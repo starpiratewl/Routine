@@ -121,8 +121,8 @@ text(test_FPR, test_TPR + 0.05, test_label, cex = 0.6, pos = 1, col = "red")
 ## (https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/metrics/metrics.py#L479)。
 ##
 ## 
-##
-##
+############################################################################################
+## use "pROC" package to plot the ROC curves
 install.packages("pROC")
 library("pROC")
 data(aSAH)
@@ -159,8 +159,23 @@ legend("bottomright", legend=c("S100B", "NDKA"), col=c("1", "2"), lwd=2)
 ##
 ##
 ##
-##
-##
+############################################################################################
+## use "ROCR" package to plot the ROC curves
+## install.packages("ROCR")
+library(ROCR)
+data(ROCR.simple)
+pred <- prediction(ROCR.simple$predictions, ROCR.simple$labels)
+pref <- performance(pred, "tpr", "fpr")
+plot(pref, colorize = T)
+
+## if we want to plot two ROC curves together and compare them, the code are as follows:
+library(ROCR)
+perf1 <- performance( prediction( mode1, test$y) )
+perf2 <- performance( prediction( model2, test$y) )
+plot( perf1, col ='orange')
+plot( perf2 , add = T )
+legend("bottomleft", legend = c('orange: model1','black: model2') )
+
 ##
 ##
 ##
