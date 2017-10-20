@@ -1,0 +1,236 @@
+## ROC曲线可以用于评价一个分类器
+## 需要提前说明的是，我们这里只讨论二值分类器。对于分类器，或者说分类算法，评价指标主要有precision，recall，F-score，
+## 以及我们今天要讨论的ROC和AUC。
+
+## ROC曲线的横坐标为false positive rate（FPR），纵坐标为true positive rate（TPR）。Their defination is as follows:
+## 
+##                                               True class
+##                                               Positive                   Negative
+##                       prediction Positive     True positive  (TP)        Fals positive   (FP)
+## Hypothesis class
+##                       prediction Negative     False negative (FN)        True negative   (TN)
+##
+##
+## fp rate = FP / N
+## tp rate = TP / P
+## precision = TP / (TP + FP)
+## recall = TP / P
+## accuracy = (TP + TN) / (P + N)
+## F-measure = 2 / (1 / precision + 1 / recall)
+
+
+
+## 接下来我们考虑ROC曲线图中的四个点和一条线。第一个点，(0,1)，即FPR=0, TPR=1，这意味着FN（false negative）=0，并且FP
+## （false positive）=0。Wow，这是一个完美的分类器，它将所有的样本都正确分类。第二个点，(1,0)，即FPR=1，TPR=0，类似地
+## 分析可以发现这是一个最糟糕的分类器，因为它成功避开了所有的正确答案。第三个点，(0,0)，即FPR=TPR=0，即FP（false positive）
+## =TP（true positive）=0，可以发现该分类器预测所有的样本都为负样本（negative）。类似的，第四个点（1,1），分类器实际上预测
+## 所有的样本都为正样本。经过以上的分析，我们可以断言，ROC曲线越接近左上角，该分类器的性能越好。
+
+## 下面考虑ROC曲线图中的虚线y=x上的点。这条对角线上的点其实表示的是一个采用随机猜测策略的分类器的结果，例如(0.5,0.5)，
+## 表示该分类器随机对于一半的样本猜测其为正样本，另外一半的样本为负样本。
+
+## 如何画ROC曲线
+## 对于一个特定的分类器和测试数据集，显然只能得到一个分类结果，即一组FPR和TPR结果，而要得到一个曲线，我们实际上需要一系列FPR和
+## TPR的值，这又是如何得到的呢？我们先来看一下[Wikipedia](http://en.wikipedia.org/wiki/Receiver_operating_characteristic)
+## 上对ROC曲线的定义：
+## In signal detection theory, a receiver operating characteristic (ROC), or simply ROC curve, is a graphical plot which 
+## illustrates the performance of a binary classifier system as its discrimination threshold is varied. 
+
+## 问题在于“as its discrimination threashold is varied”。如何理解这里的“discrimination threashold”呢？我们忽略了分类器的
+## 一个重要功能“概率输出”，即表示分类器认为某个样本具有多大的概率属于正样本（或负样本）。通过更深入地了解各个分类器的内部机理，
+## 我们总能想办法得到一种概率输出。通常来说，是将一个实数范围通过某个变换映射到(0,1)区间。(这种映射不一定都是可靠的，即你不一定
+## 真的得到了某个样本是正样本的概率)
+
+## 假如我们已经得到了所有样本的概率输出（属于正样本的概率），现在的问题是如何改变“discrimination threashold”？我们根据每个测
+## 试样本属于正样本的概率值从大到小排序。下面是一个示例，图中共有20个测试样本，“Class”一栏表示每个测试样本真正的标签（p表示正样
+## 本，n表示负样本），“Score”表示每个测试样本属于正样本的概率。(注意这里使用了“Score”，而不是概率，我们暂且可以认为“Score”值
+## 就是是正样本的概率。)
+
+##      Inst#     Class     Score
+##      1         p         0.9
+##      2         p         0.8
+##      3         n         0.7
+##      4         p         0.6
+##      5         p         0.55
+##      6         p         0.54
+##      7         n         0.53
+##      8         n         0.52
+##      9         p         0.51
+##      10        n         0.505
+##      11        p         0.4
+##      12        n         0.39
+##      13        p         0.38
+##      14        n         0.37
+##      15        n         0.36
+##      16        n         0.35
+##      17        p         0.34
+##      18        n         0.33
+##      19        p         0.3
+##      20        n         0.1
+##
+##  接下来，我们从高到低，依次将“Score”值作为阈值threshold，当测试样本属于正样本的概率大于或等于这个threshold时，
+##  我们认为它为正样本，否则为负样本。举例来说，对于图中的第4个样本，其“Score”值为0.6，那么样本1，2，3，4都被认为
+##  是正样本，因为它们的“Score”值都大于等于0.6，而其他样本则都认为是负样本。每次选取一个不同的threshold，我们就可
+##  以得到一组FPR和TPR，即ROC曲线上的一点。这样一来，我们一共得到了20组FPR和TPR的值，如下表，将它们画在ROC曲线图：
+##      Inst#     Class     Score       FPR(False positive rate)       TPR(True positive rate)
+##      1         p         0.9         0                              1/10 = 0.1
+##      2         p         0.8         0                              2/10 = 0.2
+##      3         n         0.7         1/10 = 0.1                     2/10 = 0.2
+##      4         p         0.6         1/10 = 0.1                     3/10 = 0.3
+##      5         p         0.55        1/10 = 0.1                     4/10 = 0.4
+##      6         p         0.54        1/10 = 0.1                     5/10 = 0.5
+##      7         n         0.53        2/10 = 0.2                     5/10 = 0.5
+##      8         n         0.52        3/10 = 0.3                     5/10 = 0.5
+##      9         p         0.51        3/10 = 0.3                     6/10 = 0.6
+##      10        n         0.505       4/10 = 0.4                     6/10 = 0.6
+##      11        p         0.4         4/10 = 0.4                     7/10 = 0.7
+##      12        n         0.39        5/10 = 0.5                     7/10 = 0.7
+##      13        p         0.38        5/10 = 0.5                     8/10 = 0.8
+##      14        n         0.37        6/10 = 0.6                     8/10 = 0.8
+##      15        n         0.36        7/10 = 0.7                     8/10 = 0.8
+##      16        n         0.35        8/10 = 0.8                     8/10 = 0.8
+##      17        p         0.34        8/10 = 0.8                     9/10 = 0.9
+##      18        n         0.33        9/10 = 0.9                     9/10 = 0.9
+##      19        p         0.3         9/10 = 0.9                     10/10 = 1
+##      20        n         0.1         10/10 = 1                      10/10 = 1
+##
+##  let us plot to see the rough roc plot
+test_label <- c(0.9, 0.8, 0.7, 0.6, 0.55, 0.54, 0.53, 0.52, 0.51, 0.505, 0.4, 0.39, 0.38, 0.37, 0.36, 0.35, 0.34, 0.33, 0.3, 0.1)
+test_FPR <- c(0, 0, 0.1, 0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.5, 0.6, 0.7, 0.8, 0.8, 0.9, 0.9, 1)
+test_FPR <- c(0.1, 0.2, 0.2, 0.3, 0.4, 0.5, 0.5, 0.5, 0.6, 0.6, 0.7, 0.7, 0.8, 0.8, 0.8, 0.8, 0.9, 0.9, 1, 1)
+plot(test_FPR, test_TPR, type = "b")
+text(test_FPR, test_TPR + 0.05, test_label, cex = 0.6, pos = 1, col = "red")
+## 当我们将threshold设置为1和0时，分别可以得到ROC曲线上的(0,0)和(1,1)两个点。将这些(FPR,TPR)对连接起来，
+## 就得到了ROC曲线。当threshold取值越多，ROC曲线越平滑。
+##
+## 其实，我们并不一定要得到每个测试样本是正样本的概率值，只要得到这个分类器对该测试样本的“评分值”即可
+## （评分值并不一定在(0,1)区间）。评分越高，表示分类器越肯定地认为这个测试样本是正样本，而且同时使用各个
+## 评分值作为threshold。我认为将评分值转化为概率更易于理解一些。
+
+
+
+
+
+## # AUC值的计算
+## AUC（Area Under Curve）被定义为ROC曲线下的面积，显然这个面积的数值不会大于1。又由于ROC曲线一般都处于y=x
+## 这条直线的上方，所以AUC的取值范围在0.5和1之间。使用AUC值作为评价标准是因为很多时候ROC曲线并不能清晰的说明
+## 哪个分类器的效果更好，而作为一个数值，对应AUC更大的分类器效果更好。
+
+## 在了解了ROC曲线的构造过程后，编写代码实现并不是一件困难的事情。相比自己编写代码，有时候阅读其他人的代码收获更多，
+## 当然过程也更痛苦些。在此推荐[scikit-learn](http://scikit-learn.org/stable/)中关于[计算AUC的代码]
+## (https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/metrics/metrics.py#L479)。
+##
+## 
+##
+##
+install.packages("pROC")
+library("pROC")
+data(aSAH)
+roc(aSAH$outcome, aSAH$s100b, plot = T, print.thres = T, print.auc = T)
+
+r1 <- roc(outcome ~ s100b, data = aSAH)
+r2 <- roc(outcome ~ ndka, data = aSAH)
+roc.test(r1,r2)
+##
+##        DeLong's test for two correlated ROC curves
+##
+##data:  r1 and r2
+##Z = 1.3908, p-value = 0.1643
+##alternative hypothesis: true difference in AUC is not equal to 0
+##sample estimates:
+##AUC of roc1 AUC of roc2 
+##  0.7313686   0.6119580
+
+plot.roc(outcome ~ s100b, data = aSAH,col="1", print.thres = T, print.auc = T)->r1
+lines.roc(outcome ~ ndka, data = aSAH,col="2", print.thres = T, print.auc = T)->r2
+## here we can see the two different ROC lines, and compare there two lines
+
+
+
+roc1 <- plot.roc(aSAH$outcome, aSAH$s100, main="Statistical comparison", percent=TRUE, col="1")
+roc2 <- lines.roc(aSAH$outcome, aSAH$ndka, percent=TRUE, col="2")
+testobj<- roc.test(roc1,roc2)
+text(50, 50, labels=paste("p-value =", format.pval(testobj$p.value)), adj=c(0, .5))
+text(70, 40, labels = "AUC = 0.6119580")
+text(60, 70, labels = "AUC = 0.7313686")
+legend("bottomright", legend=c("S100B", "NDKA"), col=c("1", "2"), lwd=2)
+
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+##
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
