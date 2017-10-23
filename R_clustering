@@ -1,1 +1,167 @@
+## building regression models is known as supervised learning
+## building statistical models to identify the underlying structure of data(without foucsing on a specific variable) is known the 
+## as unsupervised learning
+
+## an important class of unsupervised learning is clustering, which is commonly used to identify subgroups within a population.
+## in general, cluster analysis refers to the methods that attempt to divide the data into subgroups such that the observations within
+## the same group are more similar compared to the observations in different groups
+
+
+## the core concept in any cluster analysis is the notion of similarity and dissmilarity. It is common to quantify the degree of 
+## dissimilarity based on a distance measure, which is usually defined for a pair of observations
+
+## the most commonly used distance measure is the squared distance
+## dij = (xi - xj)^2
+
+## in general, if we measure p random variables X1, X2, X3, ..., Xp, the squared distance between two observations i and j in our
+## sample is :
+## dij = (xi1 - xj1)^2 + (xi2 - xj2)^2 + (xi3 - xj3)^2 + ... + (xip - xjp)^2
+
+## This measure of dissimilarity is called the squared Euclidean distance
+
+
+##############################################################################
+## k means clustering
+##############################################################################
+
+##  k means clustering is a simple algorithm that uses the squared Euclidean distance as its measure of dissimilarity.  We start
+## by specifying the number of clusters(groups) K. This is the number of groups we believe exist in the population. Our goal
+## is then to group the n observations in our sample into K clusters such that the overall measure of dissimilarity is samll
+## within groups and large between groups. Initially, we divide the observations into K groups randomly, then the algorithm
+## iteratively improves the clusters
+
+## Let us define the center or centroid of each cluster as an imaginary observation whose measurements are the sample average
+## of all observations in that cluster.
+
+## After randomly partitioning the observations into K groups and finding the center of each cluster, the K means algorithm
+## finds the best clusters by interatively repeating these steps:
+## 1. For each observation, find its squared Euclidean distance to all K centers, and assign it to the cluster with the smallest
+##    distance
+## 2. After regrouping all the observations into K clusters, recalculate the K centers
+
+## These steps are applied until the clusters do not change(i.e., the centers remain the same after each iteration)
+
+setwd("D:\\importantbk\\learning\\data\\R_documentation\\biostatistics_with_R")
+Protein <- read.csv(file = "Protein.txt", stringsAsFactors = F)
+## the original file has a little trouble when read into R, so we change it in Ultroedit(substitute all the tab seperator with ",")
+
+x <- Protein[, c("RedMeat", "Fish")]
+
+## standardize the data
+x <- scale(x)
+
+clus <- kmeans(x, centers = 3)
+
+clus$cluster
+## [1] 1 1 3 1 1 2 2 2 3 2 1 3 1 1 2 1 2 1 2 2 3 3 1 3 1
+
+clus$centers
+##     RedMeat       Fish
+##1 -0.5705926 -0.7434033
+##2 -0.2735221  1.1435597
+##3  1.4107826 -0.1618402
+
+Protein$ClusterID <- clus$cluster
+
+plot(Protein$Fish, Protein$RedMeat, type = "n", xlab = "Fish", ylab = "Red Meat", xlim = c(0, 15), ylim = c(0, 20))
+
+points(Protein$Fish[Protein$ClusterID == 1], Protein$RedMeat[Protein$ClusterID == 1], pch = 1, cex = 1.5)
+points(Protein$Fish[Protein$ClusterID == 2], Protein$RedMeat[Protein$ClusterID == 2], pch = 2, cex = 1.5)
+points(Protein$Fish[Protein$ClusterID == 3], Protein$RedMeat[Protein$ClusterID == 3], pch = 3, cex = 1.5)
+
+legend("topright", legend = c("Cluster1", "Cluster2", "Cluster3"), pch = c(1,2,3))
+
+
+##############################################################################
+## hierarchical clustering
+##############################################################################
+
+## There are two potential problems with the K means clustering algorithm.
+## First, it is a flat clustering method. After observations are assigned to their clusters, they are all considered
+## to be similar within the same cluster. That is, the observations are not further seperated based on dissimilarity
+## within a cluster.
+## Secondly, we need to specify the number of K as a priori. Finding the appropriate number of clusters is not
+## trivial, and the selected number has a substantial impact on the result
+
+## An alternative approach that avoids these issues is hierarchical clustering. The result of this method is a 
+## dendrogram(tree). The root of the dendrogram is its highest level and contain all n observations. The leaves
+## of the tree are its lowest level and are each a unique observation
+
+## There are two general algorithm for hierarchical clustering:
+## 1. Agglomerative(bottom-up)
+## We start at the bottom of the tree, where every observation is a cluster(i.e. there are n clusters). Then we merge
+## two of the clusters with the smallest degree of dissimilarity (i.e., the two most similar clusters). Now we have
+## n - 1 clusters. We continue merging clusters until we have only one cluster(the root) that includes all observations.
+
+## 2.Divisive(top-down). We start at the top of the tree, where all observations are grouped in a single cluster. Then we
+## divide the cluster into two new clusters that are most dissimilar. Now we have two clusters. We continue splitting
+## existing clusters until every observation is its own cluster.
+
+
+## OF the above two strategies, agglomerative algorithm is more common. Both algorithm. however, require a measure of 
+## dissimilarity between two clusters. In other words, we need to specify a distance measure for two clusters analogous
+## to the distance measure we defined for two observations.
+## For every pair of observations, where one is from cluster i, and the other is from cluster j, we can find the squared 
+## Euclidean distance dij. Then we can use one of the following methods to calculate the overall distance between two clusters:
+
+## Single linkage
+## clustering uses the minimum dij among all possible pairs as the distance between the two clusters. This is the distance
+## between two observations, one from each cluster, that are closest to each other.
+
+## Complete linkage
+## clustering uses the maximum dij as the distance between the two clusters. This is the distance between two observations,
+## one from each cluster, that are furthest apart.
+
+## Average linkage
+## clustering uses the average dij over all possible pairs as the distance between the two clusters.
+
+## Centroid linkage
+## clustering finds the centroids of the two clusters and uses the distance between the centroids as the distance
+## between the two clusters
+
+
+setwd("D:\\importantbk\\learning\\data\\R_documentation\\biostatistics_with_R")
+Protein <- read.csv(file = "Protein.txt", stringsAsFactors = F)
+## the original file has a little trouble when read into R, so we change it in Ultroedit(substitute all the tab seperator with ",")
+
+x <- Protein[, c("RedMeat", "Fish")]
+
+## standardize the data
+## it is common to standardizevariable prior to clustering so that all variables contribute equally to the overall
+## distance measure and have the same influence on the results.
+x <- scale(x)
+
+d <- dist(x)
+
+clus.h <- hclust(d, method = "centroid")
+
+plot(clus.h, labels = Protein$Country)
+
+
+## using the results from hierarchical clustering, we can group observations into K clusters by cutting the dendrogram
+## through K branches.
+rect.hclust(clus.h, k = 3)
+
+clus.h.id <- cutree(clus.h, k = 3)
+
+Protein$HClusterID <- clus.h.id
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
