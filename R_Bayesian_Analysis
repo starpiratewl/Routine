@@ -1,3 +1,171 @@
+## here we discuss Bayesian inference regrading the popualation proportion as an exapmle for the application of Bayesian methods.
+## To learn more about Bayesian data analysis, refer to the following books:
+## 1.Christensen, R., Johnson, W., Branscum, A., Hanson, T.E.: Bayesian Ideas and Data Analysis: An Introduction for 
+## Scientists and Statisticians. Texts in Statistical Science. Taylor and Francis, London (2010)
+## 2.Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B.: Bayesian Data Analysis. Chapman and Hall, London (2003)
+
+###########################################
+## breast cancer survival example
+###########################################
+
+## we start from the hypothesis
+P(u = 0.85)/P(u = 0.75) = 1
+
+## we selected a sample of 20 breast cancer patients and the p = 18/20 = 0.9
+## the Bayesian analysis is to use the sample information to change our initial assumption about the population
+
+## the Bayesian model is as follows:
+## P(E2|E1) = P(E1|E2)P(E2)/P(E1)
+
+## so in our example, the probability is calculated as follows:
+##################################################################
+## P(u = 0.85|Y = 18) = P(Y = 18|u = 0.85)P(u = 0.85)/P(Y = 18)
+##################################################################
+## P(u = 0.85|Y = 18) is the probability that the true value of the survival rate is 0.85 given the information
+##      that 18 people have survived(out of 20)
+## P(Y = 18|u = 0.85) is the probability that 18 people survive assuming that the true survival rate is 0.85
+## P(u = 0.85) is the probability that the survival rate is in fact 0.85(we assumed this probability as 0.5)
+## P(Y = 18) is the probability that 18 people survive regardless of the what the probability of survival is(0.85 or 0.75)
+
+
+## P(Y = 18|u = 0.85) is calcualted as follows:
+dbinom(18, size = 20, prob = 0.85)
+## [1] 0.2293384
+
+## P(Y = 18) is calculated as follows:
+## to find this, we use the law of total probability:
+## P(A) = sum(P(A|B1)P(B1) + P(A|B2)P(B2) + P(A|B2)P(B2) + ... + P(A|Bk)P(Bk))
+## P(Y = 18) = sum(P(Y = 18|0.75)P(0.75) + P(Y = 18|0.85)P(0.85))
+dbinom(18, size = 20, prob = 0.75)
+##[1] 0.06694781
+
+## P(Y = 18) = sum(P(Y = 18|0.75)P(0.75) + P(Y = 18|0.85)P(0.85))
+##   = sum(0.07*0.5 + 0.23*0.5) = 0.15
+
+## P(u = 0.85|Y = 18) = P(Y = 18|u = 0.85)P(u = 0.85)/P(Y = 18)
+##   = 0.23 * 0.5 / 0.15 = 0.76
+
+## what does this P(u = 0.85|Y = 18) = 0.76 mean?
+## at the beginning, we believed that the probability of P(u = 0.85) and P(u = 0.75) are equal, both are 0.5
+## but with the sample(18 out of 20 people survived), we have increased P(u = 0.85) from 0.5 to 0.76
+
+
+
+## following this step we can calculate the P(u = 0.75| Y = 18) as follows:
+##################################################################
+## P(u = 0.75|Y = 18) = P(Y = 18|u = 0.75)P(u = 0.75)/P(Y = 18)
+##################################################################
+dbinom(18, size = 20, prob = 0.75)
+##[1] 0.06694781
+## P(Y = 18|u = 0.75) = 0.07
+
+## P(u = 0.75|Y = 18) = 0.07 * 0.5 / 0.15 = 0.23
+
+## what does this P(u = 0.75|Y = 18) = 0.23 mean?
+## at the beginning, we believed that the probability of P(u = 0.85) and P(u = 0.75) are equal, both are 0.5
+## but with the sample(18 out of 20 people survived), we have reduced P(u = 0.75) from 0.5 to 0.23
+
+## this result can be conclude that, with the sample(18 out of 20), we have modified our initial assumption
+## P(u = 0.85)/P(u = 0.75) = 1
+## or we can say that the sample(18 out of 20) help us to estimate more precisely
+
+
+##################################################################
+## prior and posterior probabilities
+##################################################################
+## prior probabilities are probabilities we assign to possible values of u before observing any data
+## in the above example, P(u = 0.85)/P(u = 0.75) = 1 is the prior probability
+
+## we refer to P(Y = 18|u = 0.85) as likelihood (似然值)
+## the likelihood means how likely it is to see this specific data(18 survivals out of 20) if u is in fact 0.85
+## We can express the probability of the specific data we have observed(i.e. 18 survivals out of 20) as a function
+## of different values of u. We refer to this function as the likelihood function.
+
+              |0.07, u = 0.75
+P(Y = 18|u) = |
+              |0.23, u = 0.85
+
+## we refer to the updated probability of u after we observe the data as the posterior probability of u. 
+## here the posterior probability is P(u = 0.75|Y = 18) = 0.23 and P(u = 0.85|Y = 18) = 0.76
+P(u = 0.85|Y = 18) / P(u = 0.75|Y = 18) = 0.76 / 0.23 = 3.2
+## this is known as the posterior odds( here we find the odds of 0.85 over 0.75)
+
+P(u = 0.85|Y = 18) / P(u = 0.75|Y = 18) 
+= P(Y = 18|u = 0.85)P(u = 0.85) / P(Y = 18)  /  P(Y = 18|u = 0.75)P(u = 0.75) / P(Y = 18)
+= P(Y = 18|u = 0.85)P(u = 0.85) / P(Y = 18|u = 0.75)P(u = 0.75)
+= P(Y = 18|u = 0.85)/P(Y = 18|u = 0.75)  * P(u = 0.85)/P(u = 0.75)
+
+###############################################################################################################
+## so this deduction tell us that the posterior odds is the product of the prior odds by the likelyhood ratio
+###############################################################################################################
+
+
+## the beta distribution, whose range is from 0 to 1, is commonly used as the prior distribution for the population
+## proportion u. The beta distribution is specified by two parameters, a and b, and is denoted as Beta(a,b). We
+## refer to a and b as shape 1 and shape2, respectively. Both parameters must be positive numbers.
+
+mu <- seq(from = 0, to = 1, length.out = 100)
+f <- dbeta(mu, shape1 = 8, shape = 2)
+plot(mu, f, type = "l", xlab = expression(mu), ylab = "Density")
+
+
+###############################################################################################################
+## in general, for a beta distribution with parameter a and b, the mean is a/(a + b)
+###############################################################################################################
+
+## with the help of beta distribution, we can rethink the above example about breast cancer survival
+## this time, instead of assuming that only two values are possible, we assume that the true population proportion
+## could be any value from 0 to 1. In general, we always recommend to avoid making overly restrictive assumptions
+## such asthe one we used for illustrative purpose in the above example. That is, even if previous studies
+## estimated the population proportion to be either 0.75 and 0.85, we still should consider all other feasible values
+## when specifying the prior distribution, we can use a beta distribution that reflects this assumption
+
+## note that this prior probability distribution reflects our knowledge(based on previous studies) regarding
+## the possible values of survival rate before we obtain new data. We update our knowledge after we observe
+## new empirical evidence. Our updated knowledge is expressed as the posterior probability distribution, which
+## could be drastically different from the prior probability distribution.
+## Therefore, even though we believe in prior that the survival rate is around 0.8, a new empirical evidence
+## could be overwhelmingly change this belief. We might be even convinced that values around 0.2 are more probable
+## than values around 0.8 if the observed data strongly suggest that.
+
+## to find the posterior probability distribution, we use Bayes's theorem as before. When the prior probability
+## distribution is continuous, as it is the case here, finding the posterior probability distribution tends to be
+## complicated in general. For the population proportion, however, using beta prior distributions simplifies the 
+## problem of finding the posterior probability. In this case, it turns out that the posterior probability
+## itself is a beta distribution with updated parameters
+
+###############################################################################################################
+## if we assume that the prior knowledge of the population proportion u, can be expressed using a Beta(a,b)
+## distribution, then the posterior distribution of u is Beta(a + y, b + n - y), where n is the sample size,
+## and y is the number of times the event of interest has been observed
+###############################################################################################################
+
+## if we are the first group studying the survival rate of breast cancer, and we do not have any prior knowledge
+## about population proportion. Under this circumstances, we can still use a prior probability distribution
+## that reflects our lack knowledge and ignorance. For the population proportion, Beta(1,1) is a typical distribution
+## used in such situations. This is also known as the Uniform(0,1) distribution (i.e. uniform from 0 to 1). 
+## Informally, this distribution states that all values from 0 to 1 are equally probable. More formally, the
+## uniform distribution indicates that the probability of any interval is equal to the length of the interval.
+## (Since the height of the pdf for this distribution is equal to one, the area under the line for each interval
+## is the same as the length of that interval.) Therefore, the probability that the population proportion is
+## between 0.1 and 0.2 is the same as the probability that the population proportion is betwenn 0.8 and 0.9.
+
+
+
+###############################################################################################################
+## We typically use  the mean of the posterior distribution, which is known as the posterior expectation,
+## as our point estimate for unknown population parameters.
+###############################################################################################################
+
+
+
+
+
+
+
+
+
+
 
 
 
