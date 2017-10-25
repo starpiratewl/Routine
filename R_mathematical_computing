@@ -1,0 +1,98 @@
+######################################################################################################################
+## write a function to calculate the solution of x^3 - x - 1 = 0 between (1,2), the accurary is set to e = 10^(-6)
+######################################################################################################################
+fzero <- function(f, a, b, eps = 1e-5){
+  if (f(a) * f(b) > 0)
+    list(fail = "finding root is fail!")
+   else{
+    repeat{
+      if(abs(b - a) < eps) break
+      x <- (a + b)/2
+      if (f(a) * f(x) < 0) b <- x  else a <- x
+    }
+    list(root = (a + b)/2, fun = f(x))
+   }
+}
+
+f <- function(x) x^3 - x - 1
+
+fzero(f, 1, 2, 1e-6)
+##$root
+##[1] 1.324718
+##
+##$fun
+##[1] -1.857576e-06
+
+## the following function are provided in R, and we can use it directly, result is the same as our function
+uniroot(f, c(1,2))
+##$root
+##[1] 1.324718
+##
+##$f.root
+##[1] -5.634261e-07
+##
+##$iter
+##[1] 7
+##
+##$init.it
+##[1] NA
+##
+##$estim.prec
+##[1] 6.103516e-05
+
+
+######################################################################################################################
+## write a function to calculate t score
+## the two group have equal variance
+######################################################################################################################
+
+A <- c(79.98, 80.04, 80.02, 80.04, 80.03, 80.03, 80.04, 79.97, 80.05, 80.03, 80.02, 80.00, 80.02)
+B <- c(80.02, 79.94, 79.98, 79.97, 79.97, 80.03, 79.95, 79.97)
+
+twosam <- function(y1, y2) {
+  n1 <- length(y1); n2 <- length(y2)
+  yb1 <- mean(y1); yb2 <- mean(y2)
+  s1 <- var(y1); s2 <- var(y2)
+  s <- ((n1 - 1) * s1 + (n2 - 1) * s2) / (n1 + n2 - 2)
+  (yb1 - yb2) / sqrt(s * (1/n1 + 1/n2))
+}
+twosam(A,B)
+##[1] 3.472245
+
+## attention here, the result is the same as the result of var equal t.test
+t.test(A,B, var.equal = T)
+##
+##        Two Sample t-test
+##
+##data:  A and B
+##t = 3.4722, df = 19, p-value = 0.002551
+##alternative hypothesis: true difference in means is not equal to 0
+##95 percent confidence interval:
+## 0.01669058 0.06734788
+##sample estimates:
+##mean of x mean of y 
+## 80.02077  79.97875 
+
+
+
+
+######################################################################################################################
+## work out the solutions of the nonlinear equation set
+## use the Newton method
+######################################################################################################################
+Newtons <- function(fun, x, ep = 1e-5, it_max = 100){
+  index <- 0; k <- 1
+  while(k<=it_max){
+    x1 <-x; 
+  }
+}
+
+
+
+
+
+
+
+
+
+
