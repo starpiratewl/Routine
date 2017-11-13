@@ -127,6 +127,199 @@ survplot(fit2,
          
 
 
+####################################################################################################################
+## survival plot test
+####################################################################################################################
+A=data.frame()
+#输入变量
+x=c(2, -2.5, 3.5, 4, 4, -5, 6, -6, 7, -7, 8, -9, 10.5, 12.5, 19, 2.5, 5, 7, -8.5, 9, -10, 11, -11, 12, 13, -14, 15, -16, 17, -18, 19, -20, 21, 24, 32)
+
+#若survt小于0(代表数据删失)，则变量censor赋值为1，否则，赋值为0
+for (i in 1:length(x))
+{
+  A[i,1]=x[i]
+  if(A[i,1]<0)
+    A[i,2]=1
+  else
+    A[i,2]=0
+}
+#分为high-wbc和low-wbc两组
+A[,3] <- c(rep("high",15),rep("low",20))
+A[,1] <- abs(x)
+#变量命名
+names(A) <- c("survt","censor","wbc")
+
+A
+##   survt censor  wbc
+##1    2.0      0 high
+##2    2.5      1 high
+##3    3.5      0 high
+##4    4.0      0 high
+##5    4.0      0 high
+##6    5.0      1 high
+##7    6.0      0 high
+##8    6.0      1 high
+##9    7.0      0 high
+##10   7.0      1 high
+##11   8.0      0 high
+##12   9.0      1 high
+##13  10.5      0 high
+##14  12.5      0 high
+##15  19.0      0 high
+##16   2.5      0  low
+##17   5.0      0  low
+##18   7.0      0  low
+##19   8.5      1  low
+##20   9.0      0  low
+##21  10.0      1  low
+##22  11.0      0  low
+##23  11.0      1  low
+##24  12.0      0  low
+##25  13.0      0  low
+##26  14.0      1  low
+##27  15.0      0  low
+##28  16.0      1  low
+##29  17.0      0  low
+##30  18.0      1  low
+##31  19.0      0  low
+##32  20.0      1  low
+##33  21.0      0  low
+##34  24.0      0  low
+##35  32.0      0  low
+
+
+
+# 建立生存对象
+library(survival)
+Surv(A$survt,A$censor==1)
+
+# 估计KM生存曲线(Kaplan–Meier estimator乘积极限法)
+y <- Surv(A$survt,A$censor==1)
+kmfit1 <- survfit(y~1)
+summary(kmfit1)
+plot(kmfit1)
+
+# 根据wbc分组估计KM生存曲线
+kmfit2 <- survfit(y~A$wbc)
+plot(kmfit2, lty = c('solid', 'dashed'), col=c('black','blue'), xlab='survival time in days',ylab='survival probabilities')
+legend('topright', c('wbc high','wbc low'), lty=c('solid','dashed'), col=c('black','blue'))
+
+
+
+# 检验显著性,rho=0为log-rank法或Mantel Haenszel法，rho=1为Wilcoxon法
+survdiff(Surv(survt,censor)~wbc, data=A,rho = 0)
+survdiff(Surv(survt,censor)~wbc, data=A,rho = 1)
+
+#设置不同函数的不同参数，选择不同的检验方法
+survreg(Surv(survt,censor)~wbc, data=A,dist="weibull")
+survreg(Surv(survt,censor)~wbc, data=A,dist="logistic")
+survreg(Surv(survt,censor)~wbc, data=A,dist="lognormal")
+
+
+#-logS(p)对生存时间t的散点图
+kmfit3=kmfit2
+kmfit3$surv=-log(kmfit3$surv)
+b1=data.frame(kmfit3$time[1:12],kmfit3$surv[1:12])
+b2=data.frame(kmfit3$time[13:31],kmfit3$surv[13:31])
+plot(b1,type="b",col="black",main="估计生存函数的负数对数")
+lines(b2,type="b",col="blue")
+legend('bottomright', c('wbc high','wbc low'), lty=c('solid','dashed'), col=c('black','blue'))
+
+##此资料不服从指数分布，近似服从Weibull分布，故宜选用对数秩法或Wilcoxon法检验的结果，两条生存曲线分布有显著性差异（p<0.05）。结果显示：两条生存曲线Wilcoxon检验的结果为p=0.025<0.05，两条生存曲线分布有显著差异，无WBC倍增的白血病患者的生存时间显著长于有WBC倍增的白血病患者。
+
+##生存函数图，横轴为生存时间t（治疗后生存的月份），纵轴为生存概率。High-WBC（有WBC倍增）在第20个月终止，low-WBC（无WBC倍增）在第32个月终止。其第一组的生存率下降速度显著快于第二组，说明无WBC倍增的患者比有WBC倍增患者的生存时间长。
+
+##上述-logS(p)对生存时间t的散点图，呈非直线趋势，说明生存时间不呈指数分布。
+
+
+#log（-logS(t)）对log(t)的散点图
+kmfit4=kmfit3
+kmfit4$surv=log(kmfit4$surv)
+C1=data.frame(kmfit4$time[1:12],kmfit4$surv[1:12])
+C2=data.frame(kmfit4$time[13:31],kmfit4$surv[13:31])
+plot(C1,type="b",col="black",main="估计生存函数的负数对数的对数")
+lines(C2,type="b",col="blue")
+legend('bottomright', c('wbc high','wbc low'), lty=c('solid','dashed'), col=c('black','blue'))
+
+##上述为log（-logS(t)）对log(t)的散点图，两条线分别近似直线，说明生存时间近似呈Weibull分布。
+
+
+
+# 由word文件里的公式--（n.risk差值）/（n.risk*time差值），画出wbc分别为high和low的死亡风险函数图
+summary(kmfit2)
+B =data.frame(kmfit2$time[1:12],kmfit2$n.risk[1:12])
+B$rr= 0
+for (i in 2:12)
+{
+  B[i,3]=(B[i-1,2]-B[i,2])/(B[i-1,2]*(B[i,1]-B[i-1,1]))
+}
+
+plot(B$rr~B$kmfit2.time.1.12.,xlab = "t",ylab = "死亡率",col="black",type="l",main="死亡风险函数")
+legend('topright', c('wbc high','wbc low'), lty=c('solid','dashed'),
+       col=c('black','blue'))
+
+C =data.frame(kmfit2$time[13:31],kmfit2$n.risk[13:31])
+C$rr= 0
+for (i in 2:19)
+{
+  C[i,3]=(C[i-1,2]-C[i,2])/(C[i-1,2]*(C[i,1]-C[i-1,1]))
+}
+
+lines(C$rr~C$kmfit2.time.13.31.,col="blue",type="l")
+
+##给出生存时间T对应的死亡风险函数。黑色曲线表现的是high-WBC组对应的风险率，蓝色曲线表现的是low-WBC对应的风险率，从图中看出：体内WBC倍增的病人死亡的风险率更高。
+
+
+
+##2. 用图形方法检验PH假设 （与1.中对数图相似）
+plot(kmfit2,fun='cloglog',xlab='time in days using logarithmic scale',ylab='log-log survival', main='log-log curves by wbc')
+##不平行，不符合PH假设
+
+##3. 构建COX PH回归模型
+#cox模型
+y <- Surv(A$survt,A$censor == 1)
+coxmodel <- coxph(y~wbc,data=A)
+summary(coxmodel)
+
+# 此例中只有wbc一个变量，不涉及到两模型选择问题。假如有多个变量，可以选择y~x1+x2+x3,y~x1+x2+x3+x3*x2+x3*x1这两个模型
+mod1 <- coxph(y ~ wbc,data=A)
+#再用anova函数比较两个模型
+#anova(mod1,mod2)
+#step(mod2)
+# 简洁模型更好
+# 风险预测
+predict(mod1,type='risk')
+
+
+## 此例中只有wbc一个变量，不涉及到两模型选择问题。假如有多个变量，可以选择y~x1+x2+x3,y~x1+x2+x3+x3*x2+x3*x1这两个模型
+#构建一个stratified Cox model.
+# 当PH假设在clinic不成立，控制这个变量
+#mod3 <- coxph(y ~ prison + dose + strata(clinic),data=addicts)
+#summary(mod3)
+
+
+##对PH假设进行统计检验
+mod1 <- coxph(y ~ wbc,data=A)
+cox.zph(mod1,transform=rank)
+# P值小显示PH假设不符合
+# 显示系数变化图
+plot(cox.zph(mod1,transform=rank),se=F)
+
+
+##得到COX调整后生存曲线
+mod1 <- coxph(y ~ wbc,data=A)
+pattern1 <- data.frame(wbc = 'low')
+summary(survfit(mod1,newdata=pattern1))
+plot(survfit(mod1,newdata=pattern1),conf.int=F)
+
+mod2 <- coxph(y ~ strata(wbc),data=A)
+pattern2 <- data.frame(wbc = 'high')
+
+
+##构建参数模型
+modpar1 <- survreg(Surv(A$survt)~wbc,data=A,dist='exponential')
+summary(modpar1)
+
 
 
 
