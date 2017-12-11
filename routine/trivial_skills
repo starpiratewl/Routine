@@ -1,0 +1,5 @@
+1. when use ultraISO load CentOS 7 ISO files directly, it can not show all the files contained in the ISO , so we have to use the
+deamon tools to load the CentOS 7 ISO files first and then use the ultraISO to choose the buttion " from disk", then we can see
+all the files contained in the ISO
+
+
