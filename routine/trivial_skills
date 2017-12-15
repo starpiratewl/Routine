@@ -1,5 +1,23 @@
+## deal with the installation of centos 7, there are many problem occurred in this process
+
 1. when use ultraISO load CentOS 7 ISO files directly, it can not show all the files contained in the ISO , so we have to use the
-deamon tools to load the CentOS 7 ISO files first and then use the ultraISO to choose the buttion " from disk", then we can see
-all the files contained in the ISO
+ultra tools to load the CentOS 7 ISO files first(工具-加载到虚拟光驱) and then use the ultraISO to choose the buttion " from disk"（文件-打开光盘）, then we can see all the files contained in the ISO, and write the flash driver.
+
+## result, this method can make the installation flash dirver , but it stopped at the "Press enter to go on the installation process", so this method did not make sense.     -----failed
 
 
+2. I though the problem may lie in the writting process of centos 7 to flash driver(the centos 7.iso is very big, about 8G). And I did find someone encounter the same problem(http://www.jb51.net/softjc/315081.html), so I followed up this instructions to do as next:
+-- delete the big content of the iso (for example "packages" director, all of these contained are optional package of centos installation)
+-- save to a new but much smaller iso file
+-- write this small iso file to flash driver
+-- the writting process of the flash driver will set the format to FAT32 which will not allow file bigger than 4g
+-- in the windows system, and call the cmd and execute the command "convert x: /fs:ntfs" to change the format(x the partition name of the flash driver)
+-- extract the big director from the original iso file and copy it to the flash driver(in the FAT32 format, it will remind the file is to big for the flash driver even the volumn of the flash driver is big enough)
+
+## result, this method seems to work but it still can not make us a functional flash driver, this time the installation pop out the error"bootmgr is missing"   -----failed
+
+
+3. I try to find other solutions and indeed someone encounter the same problem as I did(http://blog.csdn.net/testcs_dn/article/details/27667863). This method copied a new "vesamenu.c32" file in the installation flash driver to substitute the original one. This problem is similar when I installed the centos 6.8, but this time I try to install the centos7, so this method is not usefull.  -----failed
+
+
+4. I find some notes of centos7 installation and finally find the solution(http://www.linuxidc.com/Linux/2016-07/133646.htm). This paper perfectly record all the problems I have encountered. The solution is very simple, I use the old version of UltraISO, use the newly updated version will solve the problem. -----success 
