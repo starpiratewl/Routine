@@ -1,0 +1,58 @@
+setwd("D:\\wangliang\\project\\lab_seq\\051518_mpl_apch-s50539")
+
+#args= commandArgs(T)
+#tracefile=args[1]
+#########################
+tracefile="DGKZ_SCaBER_r"
+#########################
+seqTrace=read.delim(paste(tracefile,"_Trace.txt",sep=""),head=T)
+seq <- readLines(paste(tracefile,"_Seq.txt",sep=""))
+base <- as.numeric(read.table(paste(tracefile,"_Base.txt",sep="")))
+sequence <- substring(seq,1:nchar(seq),1:nchar(seq))
+Site <- as.list(read.table(paste(tracefile,"_Sites.txt",sep="")))[[1]]
+CTR=0
+color <- function(i){
+  if (sequence[i] == "A")
+     color = "green"
+  else if (sequence[i] == "T")
+     color = "red"
+  else if (sequence[i] == "G")
+     color = "black"
+  else if (sequence[i] == "C")
+     color = "blue"
+}
+
+TracePlot <- function(Site){
+pdf(paste(tracefile,"_",Site,"_",sequence[Site-1],"_",sequence[Site],"_",sequence[Site+1],".pdf",sep=""))
+ r=(base[Site]-9):base[Site+1]
+ peak=(base[Site]-8):(base[Site]+8)
+ CTratio=sum(seqTrace$G[peak])/(sum(seqTrace$G[peak])+sum(seqTrace$A[peak]))*100
+ CTratio=sprintf("%.2f",CTratio)
+ CTR[Site]<<-CTratio
+ plot(x=r, y=seqTrace$C[r], col="blue",type="l",ylim=c(0,2000),ylab="",xlab="")
+ lines(x=r, y=seqTrace$T[r], col="red",type="l")
+ lines(x=r, y=seqTrace$G[r], col="black",type="l")
+ lines(x=r, y=seqTrace$A[r], col="green",type="l")
+ #text(x=base[Site-1], y=1700, labels=sequence[Site-1],col=color(Site-1))
+ text(x=base[Site], y=1700, labels=sequence[Site],col=color(Site))
+ text(x=base[Site+1],y=1700,labels=sequence[Site+1],col=color(Site+1))
+ text(base[Site]-6,1900,paste("C/(C+T)=",CTratio,sep=""),font=2,col="darkviolet")
+ abline(v=c((base[Site]-8),(base[Site]+8)),col="skyblue")
+ dev.off()
+}
+base_call=1:length(Site)
+for ( i in base_call){
+  TracePlot(Site[i])
+}
+output = paste(tracefile,"_CTRatio.txt",sep="")
+write.table(cbind(Site,base[Site],sequence[Site[base_call]],CTR[Site]),file=output,row.names= F ,col.names= c("CpGSite","Base_calls","Base","C/(C+T)"),sep="\t",quote=F)
+
+
+
+
+
+
+
+
+
+
