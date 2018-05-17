@@ -1,9 +1,9 @@
-setwd("D:\\wangliang\\project\\lab_seq\\051518_mpl_apch-s50539")
+setwd("D:\\wangliang\\project\\lab_seq\\test\\BaseTrace")
 
 #args= commandArgs(T)
 #tracefile=args[1]
 #########################
-tracefile="DGKZ_SCaBER_r"
+tracefile="G1805106815-152-CK9_CKIT9-F_2018-05-15_E10"
 #########################
 seqTrace=read.delim(paste(tracefile,"_Trace.txt",sep=""),head=T)
 seq <- readLines(paste(tracefile,"_Seq.txt",sep=""))
